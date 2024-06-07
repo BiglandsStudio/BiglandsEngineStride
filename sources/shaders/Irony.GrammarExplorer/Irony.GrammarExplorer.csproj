@@ -1,5 +1,5 @@
 ﻿<Project>
-  <Import Project="..\..\targets\Stride.Core.props" />
+  <Import Project="..\..\targets\BiglandsEngine.Core.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -62,5 +62,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Irony\Irony.csproj" />
   </ItemGroup>
-  <Import Project="$(StrideSdkTargets)" />
+  <Import Project="$(BiglandsEngineSdkTargets)" />
 </Project>

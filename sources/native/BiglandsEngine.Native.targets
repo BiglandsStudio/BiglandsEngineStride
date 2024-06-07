@@ -1,0 +1,281 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Condition="Exists('$(MSBuildProjectDirectory)\BiglandsEngine.Native.Libs.targets')" Project="$(MSBuildProjectDirectory)\BiglandsEngine.Native.Libs.targets" />
+
+  <PropertyGroup>
+    <!-- ignore bin and obj folders -->
+    <BiglandsEngineNativeDefaultItemExcludes>$(BiglandsEngineNativeDefaultItemExcludes);$(BaseOutputPath)/**</BiglandsEngineNativeDefaultItemExcludes>
+    <BiglandsEngineNativeDefaultItemExcludes>$(BiglandsEngineNativeDefaultItemExcludes);$(BaseIntermediateOutputPath)/**</BiglandsEngineNativeDefaultItemExcludes>
+  </PropertyGroup>  
+  <ItemGroup>
+    <BiglandsEngineNativeCFile Include="**\*.c;**\*.cpp" Exclude="$(BiglandsEngineNativeDefaultItemExcludes)" />
+    <BiglandsEngineNativeHFile Include="**\*.h;**\*.hpp" Exclude="$(BiglandsEngineNativeDefaultItemExcludes)" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!--Use "-v" to debug the tooling -->
+    <BiglandsEngineNativeToolingDebug></BiglandsEngineNativeToolingDebug> 
+
+    <BiglandsEngineNativeLldCommand>lld</BiglandsEngineNativeLldCommand>
+    <BiglandsEngineNativeLldCommand Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(MSBuildThisFileDirectory)..\..\deps\\LLVM\lld.exe</BiglandsEngineNativeLldCommand>
+
+    <BiglandsEngineNativeClangCommand>clang</BiglandsEngineNativeClangCommand>
+    <BiglandsEngineNativeClangCommand Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(MSBuildThisFileDirectory)..\..\deps\\LLVM\clang.exe</BiglandsEngineNativeClangCommand>
+    
+    <BiglandsEngineNativeClang>$(BiglandsEngineNativeToolingDebug) -Wno-ignored-attributes -Wno-delete-non-virtual-dtor -Wno-macro-redefined -I&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath&quot; -I&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\standard&quot;</BiglandsEngineNativeClang>
+    <BiglandsEngineNativeClangCPP>-std=c++11 -fno-rtti -fno-exceptions</BiglandsEngineNativeClangCPP>
+  
+    <!--<BiglandsEngineNativeOutputPath>$([MSBuild]::MakeRelative('$(OutputPath)', '$(BiglandsEnginePackageBiglandsEnginePlatformBin)\'))</BiglandsEngineNativeOutputPath>-->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>.so; .a; $(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkUWP)'">
+      <PropertyGroup>
+        <BiglandsEngineNativeClang Condition="'$(Configuration)' == 'Debug'">$(BiglandsEngineNativeClang) -Od</BiglandsEngineNativeClang>
+        <BiglandsEngineNativeClang Condition="'$(Configuration)' == 'Release'">$(BiglandsEngineNativeClang) -O2</BiglandsEngineNativeClang>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <BiglandsEngineNativeClang Condition="'$(Configuration)' == 'Debug'">$(BiglandsEngineNativeClang) -O0 -g</BiglandsEngineNativeClang>
+        <BiglandsEngineNativeClang Condition="'$(Configuration)' == 'Release'">$(BiglandsEngineNativeClang) -O3</BiglandsEngineNativeClang>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  
+  <!-- Define default CPU architectures -->
+  <!-- TODO: Some targets are not crossplatform, so they are restricted to Windows OS -->
+  <ItemGroup Condition="'$(TargetFramework)' == '$(BiglandsEngineFramework)'">
+    <BiglandsEngineNativeCPU Condition="$([MSBuild]::IsOSPlatform('Windows'))" Include="win-x64;win-x86" LibraryExtension=".dll" LibraryRuntime="win" />
+    <BiglandsEngineNativeCPU Include="linux-x64"  LibraryExtension=".so" LibraryRuntime="linux" />
+    <BiglandsEngineNativeCPU Condition="$([MSBuild]::IsOSPlatform('Windows'))" Include="osx-x64"  LibraryExtension=".dylib" LibraryRuntime="osx" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkAndroid)'">
+    <BiglandsEngineNativeCPU Include="android-arm64;android-arm;android-x86;android-x64" LibraryExtension=".so" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkiOS)'">
+    <BiglandsEngineNativeCPU Include="ios" LibraryExtension=".a" />
+  </ItemGroup>
+  <!-- Can be deleted -->
+  <ItemGroup Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkUWP)'">
+    <BiglandsEngineNativeCPU Include="x86;x64;ARM" LibraryExtension=".dll" />
+  </ItemGroup>
+  <!-- Use runtimes/*/native folder -->
+  <ItemGroup>
+    <BiglandsEngineNativeCPU Update="@(BiglandsEngineNativeCPU)">
+      <LibraryOutputDirectory>runtimes\%(Identity)\native\</LibraryOutputDirectory>
+    </BiglandsEngineNativeCPU>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <!-- One output file per CPU -->
+    <_BiglandsEngineNativeOutput Include="@(BiglandsEngineNativeCPU->'%(LibraryOutputDirectory)$(BiglandsEngineNativeOutputName)%(LibraryExtension)')">
+      <RelativePath>%(Identity)</RelativePath>
+    </_BiglandsEngineNativeOutput>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Include="@(BiglandsEngineNativeCFile)" />
+    <UpToDateCheckInput Include="@(BiglandsEngineNativeHFile)" />
+    <UpToDateCheckOutput Include="@(BiglandsEngineNativeOutput)" />
+  </ItemGroup>
+  
+  <!-- Update BiglandsEngineNativeOutput.Link using computed OutputPath and add to BiglandsEngineNativeLib -->
+  <Target Name="_BiglandsEngineRegisterNativeOutputs" Condition="'$(TargetFramework)' != ''" BeforeTargets="_BiglandsEngineRegisterDependenciesOutputs;_BiglandsEngineGenerateDependencies">
+    <PropertyGroup>
+      <OutputObjectPath>$(MSBuildProjectDirectory)\$(IntermediateOutputPath)</OutputObjectPath>
+      <BiglandsEngineNativeOutputPath>$([System.IO.Path]::GetFullPath('$(OutputPath)'))</BiglandsEngineNativeOutputPath>
+      <_OutputPathRelative>$([System.IO.Path]::GetFullPath('$(OutputPath)'))</_OutputPathRelative>
+      <BiglandsEngineNativeOutputPathiOS>$(BiglandsEngineNativeOutputPath)\runtimes\ios\native\</BiglandsEngineNativeOutputPathiOS>
+    </PropertyGroup>
+    <ItemGroup>
+      <BiglandsEngineNativeOutput Include="@(_BiglandsEngineNativeOutput->'$(BiglandsEngineNativeOutputPath)%(Identity)')"/>
+      <BiglandsEngineNativeOutput>
+        <Link>$([MSBuild]::MakeRelative('$(_OutputPathRelative)', '$(BiglandsEngineNativeOutputPath)'))\%(RelativePath)</Link>
+      </BiglandsEngineNativeOutput>
+      <BiglandsEngineNativeLib Include="@(BiglandsEngineNativeOutput)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_BiglandsEngineNativeTouchAfterCompile" AfterTargets="CoreCompile">
+    <!-- This is necessary for UpToDateCheck: CompileNativeClang is checking only BiglandsEngineNativeOutput against native sources
+         but FastUpToDateCheck check BiglandsEngineNativeOutput against various other unrelated files such as C# sources, so we want to mark the file as modified after, even if CompileNativeClang was skipped -->
+    <Touch Files="@(BiglandsEngineNativeOutput)" />
+  </Target>
+
+  <!-- Define ItemGroup so that they are properly copied -->
+  <!-- Disabled since it doesn't play nice because file is not output yet when we are building ourselves. Also MSBuild doesn't copy reference of sub project if CopyLocal is false -->
+  <!--<PropertyGroup>
+    <AssignTargetPathsDependsOn>
+      $(AssignTargetPathsDependsOn);
+      _BiglandsEngineRegisterNativeOutputs;
+    </AssignTargetPathsDependsOn>
+  </PropertyGroup>
+  <Target Name="_BiglandsEngineRegisterNativeOutputs">
+    <Message Importance="High" Text="BiglandsEngineNativeOutput: @(BiglandsEngineNativeOutput->'%(TargetFullPath)')"/>
+    <ItemGroup>
+      <Content Include="@(BiglandsEngineNativeOutput->'%(TargetFullPath)')" KeepMetadata="Nothing">
+        <Link>%(BiglandsEngineNativeOutput.Identity)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>-->
+
+  <!--<Target Name="_BiglandsEngineGenerateNativeFile" BeforeTargets="Build">
+    <Touch AlwaysCreate="true" Files="$(OutputPath)\$(BiglandsEngineNativeOutputName).ss_native"/>
+  </Target>-->
+  
+
+  <!-- TODO: Target uses vcxproj. This blocks the use of dotnet core msbuild-->
+  <Target Name="CompileNativeClang_Windows" Inputs="@(BiglandsEngineNativeCFile);@(BiglandsEngineNativeHFile)" Outputs="@(BiglandsEngineNativeOutput)" Condition="('$(TargetFramework)' == '$(BiglandsEngineFramework)') And $([MSBuild]::IsOSPlatform('Windows')) And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_BiglandsEngineRegisterNativeOutputs">
+    <MakeDir Directories="$(OutputObjectPath)\win-x86"/>
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; -gcodeview -fno-ms-extensions -nobuiltininc -nostdinc++ $(BiglandsEngineNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\win-x86\%(BiglandsEngineNativeCFile.Filename).obj&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -fms-extensions -DWINDOWS_DESKTOP -target i686-pc-windows-msvc" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; -gcodeview -fno-ms-extensions -nobuiltininc -nostdinc++ $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\win-x86\%(BiglandsEngineNativeCFile.Filename).obj&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot;  -fms-extensions -DWINDOWS_DESKTOP -target i686-pc-windows-msvc" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\WindowsDesktop\WindowsDesktop.vcxproj" Targets="Build" Properties="BiglandsEngineNativeOutputName=$(BiglandsEngineNativeOutputName);BiglandsEngineNativeOutputDir=$(BiglandsEngineNativeOutputPath)\runtimes\win-x86\native;BiglandsEngineDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;BiglandsEngineNativePathLibs=libNativePath.lib $(BiglandsEngineNativePathLibsWindows);BiglandsEngineNativeProjectFolder=$(ProjectDir);BiglandsEngineNativeProjectObjFolder=$(OutputObjectPath)\win-x86;Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
+
+    <MakeDir Directories="$(OutputObjectPath)\win-x64"/>
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; -gcodeview -fno-ms-extensions -nobuiltininc -nostdinc++ $(BiglandsEngineNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\win-x64\%(BiglandsEngineNativeCFile.Filename).obj&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -fms-extensions -DWINDOWS_DESKTOP -target x86_64-pc-windows-msvc" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; -gcodeview -fno-ms-extensions -nobuiltininc -nostdinc++ $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\win-x64\%(BiglandsEngineNativeCFile.Filename).obj&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot;  -fms-extensions -DWINDOWS_DESKTOP -target x86_64-pc-windows-msvc" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\WindowsDesktop\WindowsDesktop.vcxproj" Targets="Build" Properties="BiglandsEngineNativeOutputName=$(BiglandsEngineNativeOutputName);BiglandsEngineNativeOutputDir=$(BiglandsEngineNativeOutputPath)\runtimes\win-x64\native;BiglandsEngineDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;BiglandsEngineNativePathLibs=libNativePath.lib $(BiglandsEngineNativePathLibsWindows);BiglandsEngineNativeProjectFolder=$(ProjectDir);BiglandsEngineNativeProjectObjFolder=$(OutputObjectPath)\win-x64;Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
+
+    <!-- Workaround: forcing C# rebuild so that timestamp are up to date (ideally we should have separate input/output groups for C# and Native) -->
+    <Delete Files="@(IntermediateAssembly)"/>
+  </Target>
+
+  <Target Name="CompileNativeClang_UWP" Inputs="@(BiglandsEngineNativeCFile);@(BiglandsEngineNativeHFile)" Outputs="@(BiglandsEngineNativeOutput)"  Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkUWP)' And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_BiglandsEngineRegisterNativeOutputs">
+    <MakeDir Directories="$(OutputObjectPath)\x86"/>
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\clang-cl.exe&quot; $(BiglandsEngineNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\x86\%(BiglandsEngineNativeCFile.Filename).obj&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -WX -GS- -MD -DUWP -m32" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\UWP\UWP.vcxproj" Targets="Build" Properties="BiglandsEngineNativeOutputName=$(BiglandsEngineNativeOutputName);BiglandsEngineNativeOutputDir=$(BiglandsEngineNativeOutputPath)\x86;BiglandsEngineDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;BiglandsEngineNativePathLibs=libNativePath.lib $(BiglandsEngineNativePathLibsUWP);BiglandsEngineNativeProjectFolder=$(ProjectDir);BiglandsEngineNativeProjectObjFolder=$(OutputObjectPath)\x86;Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
+
+    <MakeDir Directories="$(OutputObjectPath)\x64"/>
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\clang-cl.exe&quot; $(BiglandsEngineNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\x64\%(BiglandsEngineNativeCFile.Filename).obj&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -WX -GS- -MD -DUWP -m64" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\UWP\UWP.vcxproj" Targets="Build" Properties="BiglandsEngineNativeOutputName=$(BiglandsEngineNativeOutputName);BiglandsEngineNativeOutputDir=$(BiglandsEngineNativeOutputPath)\x64;BiglandsEngineDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;BiglandsEngineNativePathLibs=libNativePath.lib $(BiglandsEngineNativePathLibsUWP);BiglandsEngineNativeProjectFolder=$(ProjectDir);BiglandsEngineNativeProjectObjFolder=$(OutputObjectPath)\x64;Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
+
+    <MakeDir Directories="$(OutputObjectPath)\ARM"/>
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\clang-cl.exe&quot; $(BiglandsEngineNativeClang) -DNEED_DLL_EXPORT -o &quot;$(OutputObjectPath)\ARM\%(BiglandsEngineNativeCFile.Filename).obj&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -WX -GS- -MD -DUWP -m32 --target=thumbv7-windows-msvc" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)WindowsProjects\UWP\UWP.vcxproj" Targets="Build" Properties="BiglandsEngineNativeOutputName=$(BiglandsEngineNativeOutputName);BiglandsEngineNativeOutputDir=$(BiglandsEngineNativeOutputPath)\ARM;BiglandsEngineDependenciesDir=$(MSBuildThisFileDirectory)..\..\deps\;BiglandsEngineNativePathLibs=libNativePath.lib $(BiglandsEngineNativePathLibsUWP);BiglandsEngineNativeProjectFolder=$(ProjectDir);BiglandsEngineNativeProjectObjFolder=$(OutputObjectPath)\ARM;Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
+
+    <!-- Workaround: forcing C# rebuild so that timestamp are up to date (ideally we should have separate input/output groups for C# and Native) -->
+    <Delete Files="@(IntermediateAssembly)"/>
+  </Target>
+
+  <Target Name="CompileNativeClang_iOS" Inputs="@(BiglandsEngineNativeCFile);@(BiglandsEngineNativeHFile)" Outputs="@(BiglandsEngineNativeOutput)" Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkiOS)' And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_BiglandsEngineRegisterNativeOutputs">
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_armv7.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target armv7-apple-ios" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_armv7.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target armv7-apple-ios" />
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_armv7.a&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_armv7.o&quot;', ' ')" />
+
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_armv7s.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target armv7s-apple-ios" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_armv7s.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target armv7s-apple-ios" />
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_armv7s.a&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_armv7s.o&quot;', ' ')" />
+    
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_arm64.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target arm64-apple-ios" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_arm64.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target arm64-apple-ios" />
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_arm64.a&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_arm64.o&quot;', ' ')" />
+    
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_i386.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target i386-apple-ios" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_i386.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target i386-apple-ios" />
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_i386.a&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_i386.o&quot;', ' ')" />
+    
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_x86_64.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target x86_64-apple-ios" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_x86_64.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DIOS -mios-version-min=6.0 -target x86_64-apple-ios" />
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_x86_64.a&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_x86_64.o&quot;', ' ')" />
+
+    <MakeDir Directories="$(BiglandsEngineNativeOutputPathiOS)"/>
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\lipo.exe&quot; &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_armv7.a&quot; &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_armv7s.a&quot; &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_arm64.a&quot; &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_i386.a&quot; &quot;$(OutputObjectPath)\$(BiglandsEngineNativeOutputName)_x86_64.a&quot; -create -output &quot;$(BiglandsEngineNativeOutputPathiOS)$(BiglandsEngineNativeOutputName).a&quot;" />
+
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\..\deps\\NativePath\iOS\libNativePath.a" DestinationFolder="$(BiglandsEngineNativeOutputPathiOS)" />
+    
+    <Copy SourceFiles="@(BiglandsEngineNativePathLibsiOS)" DestinationFolder="$(BiglandsEngineNativeOutputPathiOS)" />
+    
+    <ItemGroup>
+      <BiglandsEngineNativeLib Include="$(BiglandsEngineNativeOutputPathiOS)libNativePath.a"/>
+      <BiglandsEngineNativeLib Include="@(BiglandsEngineNativePathLibsiOS->'$(BiglandsEngineNativeOutputPathiOS)%(Filename)%(Extension)')"/>
+    </ItemGroup>
+
+    <!-- Workaround: forcing C# rebuild so that timestamp are up to date (ideally we should have separate input/output groups for C# and Native) -->
+    <Delete Files="@(IntermediateAssembly)"/>
+  </Target>
+
+  <Target Name="CompileNativeClang_iOS_Clean" Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkiOS)'" BeforeTargets="Clean">
+    <Delete Files="@(BiglandsEngineNativePathLibsiOS->'$(BiglandsEngineNativeOutputPathiOS)\%(Filename).a', ' ')" />
+  </Target>
+
+  <Target Name="CompileNativeClang_Android" Inputs="@(BiglandsEngineNativeCFile);@(BiglandsEngineNativeHFile)" Outputs="@(BiglandsEngineNativeOutput)" Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkAndroid)' And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_BiglandsEngineRegisterNativeOutputs">
+    <Error Text="The _AndroidNdkDirectory variable is not set!" Condition="'$(_AndroidNdkDirectory)' == ''" />
+    <PropertyGroup>
+      <BiglandsEngineNativeAndroidToolchainFolder Condition="Exists('$(_AndroidNdkDirectory)\toolchains\llvm\prebuilt\windows-x86_64\bin\clang.exe')">$(_AndroidNdkDirectory)\toolchains\llvm\prebuilt\windows-x86_64</BiglandsEngineNativeAndroidToolchainFolder>
+      <BiglandsEngineNativeAndroidToolchainFolder Condition="$(BiglandsEngineNativeAndroidToolchainFolder) == '' And Exists('$(_AndroidNdkDirectory)\toolchains\llvm\prebuilt\windows\bin\clang.exe')">$(_AndroidNdkDirectory)\toolchains\llvm\prebuilt\windows</BiglandsEngineNativeAndroidToolchainFolder>
+      <BiglandsEngineNativeAndroidClang>-lc++abi -lm --sysroot=&quot;$(BiglandsEngineNativeAndroidToolchainFolder)\sysroot&quot;</BiglandsEngineNativeAndroidClang>
+
+      <_BiglandsEngineNativeAndroidNdkSourceProperties Condition="Exists('$(_AndroidNdkDirectory)\source.properties')">$([System.IO.File]::ReadAllText('$(_AndroidNdkDirectory)\source.properties'))</_BiglandsEngineNativeAndroidNdkSourceProperties>
+      <BiglandsEngineNativeAndroidNdkVersion>$([System.Text.RegularExpressions.Regex]::Match($(_BiglandsEngineNativeAndroidNdkSourceProperties), `Pkg\.Revision = (.*)`).Groups[1].Value)</BiglandsEngineNativeAndroidNdkVersion>
+      <BiglandsEngineNativeAndroidNdkVersionMinimum>19.0</BiglandsEngineNativeAndroidNdkVersionMinimum>
+
+      <!-- Android NDK version is equivalent to minSdkVersion; note: 64 bits exist only from platform version 21 -->
+      <BiglandsEngineNativeAndroidPlatformVersion32>16</BiglandsEngineNativeAndroidPlatformVersion32>
+      <BiglandsEngineNativeAndroidPlatformVersion64>21</BiglandsEngineNativeAndroidPlatformVersion64>
+    </PropertyGroup>
+
+    <Error Condition="'$(BiglandsEngineNativeAndroidNdkVersion)' == ''" Text="Could not figure out Android NDK version from $(_AndroidNdkDirectory). There should be a source.properties file with Pkg.Revision properly set." />
+    <Error Condition="$([System.Version]::Parse('$(BiglandsEngineNativeAndroidNdkVersionMinimum)').CompareTo($([System.Version]::Parse('$(BiglandsEngineNativeAndroidNdkVersion)')))) >= 0" Text="The Android NDK version is too old. Found: $(BiglandsEngineNativeAndroidNdkVersion), Expected: $(BiglandsEngineNativeAndroidNdkVersionMinimum), Location: $(_AndroidNdkDirectory)" />
+
+    <MakeDir Directories="$(BiglandsEngineNativeOutputPath)\runtimes\android-arm\native"/>
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_armeabi-v7a.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DANDROID -fPIC --target=armv7-linux-android$(BiglandsEngineNativeAndroidPlatformVersion32)" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_armeabi-v7a.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DANDROID -fPIC --target=armv7-linux-android$(BiglandsEngineNativeAndroidPlatformVersion32)" />
+    <Exec Command="&quot;$(BiglandsEngineNativeAndroidToolchainFolder)\bin\clang.exe&quot; $(BiglandsEngineNativeToolingDebug) -shared -o &quot;$(BiglandsEngineNativeOutputPath)\runtimes\android-arm\native\$(BiglandsEngineNativeOutputName).so&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_armeabi-v7a.o&quot;', ' ') --sysroot=&quot;$(_AndroidNdkDirectory)\platforms\android-9\arch-arm&quot; @(BiglandsEngineNativePathLibsAndroid->'&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\Android\armeabi-v7a\%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\Android\armeabi-v7a\libNativePath.a&quot; $(BiglandsEngineNativeAndroidClang) --target=armv7-linux-android$(BiglandsEngineNativeAndroidPlatformVersion32)" />
+
+    <MakeDir Directories="$(BiglandsEngineNativeOutputPath)\runtimes\android-arm64\native"/>
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_arm64-v8a.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DANDROID -fPIC --target=aarch64-linux-android$(BiglandsEngineNativeAndroidPlatformVersion64)" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_arm64-v8a.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DANDROID -fPIC --target=aarch64-linux-android$(BiglandsEngineNativeAndroidPlatformVersion64)" />
+    <Exec Command="&quot;$(BiglandsEngineNativeAndroidToolchainFolder)\bin\clang.exe&quot; $(BiglandsEngineNativeToolingDebug) -shared -o &quot;$(BiglandsEngineNativeOutputPath)\runtimes\android-arm64\native\$(BiglandsEngineNativeOutputName).so&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_arm64-v8a.o&quot;', ' ') --sysroot=&quot;$(_AndroidNdkDirectory)\platforms\android-21\arch-arm64&quot; @(BiglandsEngineNativePathLibsAndroid->'&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\Android\arm64-v8a\%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\Android\arm64-v8a\libNativePath.a&quot; $(BiglandsEngineNativeAndroidClang) --target=aarch64-linux-android$(BiglandsEngineNativeAndroidPlatformVersion64)" />
+
+    <MakeDir Directories="$(BiglandsEngineNativeOutputPath)\runtimes\android-x86\native"/>
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_x86.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DANDROID -fPIC --target=i386-linux-android$(BiglandsEngineNativeAndroidPlatformVersion32)" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_x86.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DANDROID -fPIC --target=i386-linux-android$(BiglandsEngineNativeAndroidPlatformVersion32)" />
+    <Exec Command="&quot;$(BiglandsEngineNativeAndroidToolchainFolder)\bin\clang.exe&quot; $(BiglandsEngineNativeToolingDebug) -shared -o &quot;$(BiglandsEngineNativeOutputPath)\runtimes\android-x86\native\$(BiglandsEngineNativeOutputName).so&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_x86.o&quot;', ' ') --sysroot=&quot;$(_AndroidNdkDirectory)\platforms\android-9\arch-x86&quot; @(BiglandsEngineNativePathLibsAndroid->'&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\Android\x86\%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\Android\x86\libNativePath.a&quot; $(BiglandsEngineNativeAndroidClang) --target=i386-linux-android$(BiglandsEngineNativeAndroidPlatformVersion32)" />
+    
+    <MakeDir Directories="$(BiglandsEngineNativeOutputPath)\runtimes\android-x64\native"/>
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_x86_64.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DANDROID -fPIC --target=x86_64-linux-android$(BiglandsEngineNativeAndroidPlatformVersion64)" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -o &quot;$(OutputObjectPath)\%(BiglandsEngineNativeCFile.Filename)_x86_64.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -DANDROID -fPIC --target=x86_64-linux-android$(BiglandsEngineNativeAndroidPlatformVersion64)" />
+    <Exec Command="&quot;$(BiglandsEngineNativeAndroidToolchainFolder)\bin\clang.exe&quot; $(BiglandsEngineNativeToolingDebug) -shared -o &quot;$(BiglandsEngineNativeOutputPath)\runtimes\android-x64\native\$(BiglandsEngineNativeOutputName).so&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\%(Filename)_x86_64.o&quot;', ' ') --sysroot=&quot;$(_AndroidNdkDirectory)\platforms\android-21\arch-x86_64&quot; @(BiglandsEngineNativePathLibsAndroid->'&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\Android\x86_64\%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\Android\x86_64\libNativePath.a&quot; $(BiglandsEngineNativeAndroidClang) --target=x86_64-linux-android$(BiglandsEngineNativeAndroidPlatformVersion64)" />
+
+    <!-- Workaround: forcing C# rebuild so that timestamp are up to date (ideally we should have separate input/output groups for C# and Native) -->
+    <Delete Files="@(IntermediateAssembly)"/>
+  </Target>
+
+  <Target Name="CompileNativeClang_Linux" Inputs="@(BiglandsEngineNativeCFile);@(BiglandsEngineNativeHFile)" Outputs="@(BiglandsEngineNativeOutput)" Condition="('$(TargetFramework)' == '$(BiglandsEngineFramework)') And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_BiglandsEngineRegisterNativeOutputs">
+    <MakeDir Directories="$(OutputObjectPath)\linux-x64"/>
+    <MakeDir Directories="$(BiglandsEngineNativeOutputPath)\runtimes\linux-x64\native"/>
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -DPLATFORM_LINUX -o &quot;$([System.IO.Path]::Combine('$(OutputObjectPath)',linux-x64, %(BiglandsEngineNativeCFile.Filename)_x64.o))&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -fPIC -target x86_64-linux-gnu" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -DPLATFORM_LINUX -o &quot;$([System.IO.Path]::Combine('$(OutputObjectPath)',linux-x64, %(BiglandsEngineNativeCFile.Filename)_x64.o))&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -fPIC -target x86_64-linux-gnu" />
+    <Exec Condition="!$([MSBuild]::IsOSUnixLike())" Command="&quot;$(BiglandsEngineNativeLldCommand)&quot; -flavor gnu --eh-frame-hdr -m elf_x86_64 -shared -o &quot;$(BiglandsEngineNativeOutputPath)\runtimes\linux-x64\native\$(BiglandsEngineNativeOutputName).so&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\linux-x64\%(Filename)_x64.o&quot;', ' ') @(BiglandsEngineNativePathLibsLinux->'&quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\dotnet\linux-x64\%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\\NativePath\dotnet\linux-x64\libNativePath.a&quot;" />
+    <Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="&quot;$(BiglandsEngineNativeLldCommand)&quot; -flavor gnu --eh-frame-hdr -m elf_x86_64 -shared -o &quot;$(BiglandsEngineNativeOutputPath)/runtimes/linux-x64/native/$(BiglandsEngineNativeOutputName).so&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)linux-x64/%(Filename)_x64.o&quot;', ' ') @(BiglandsEngineNativePathLibsLinux->'&quot;$(MSBuildThisFileDirectory)../../deps/NativePath/dotnet/linux-x64/%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)../../deps/NativePath/dotnet/linux-x64/libNativePath.a&quot;" />
+
+    <!-- Workaround: forcing C# rebuild so that timestamp are up to date (ideally we should have separate input/output groups for C# and Native) -->
+    <Delete Files="@(IntermediateAssembly)"/>
+  </Target>
+
+  <!-- TODO: Target uses unknown origin of darwin-ld command. Maybe it comes from apple-llvm?. Blocks xplat build -->
+  <Target Name="CompileNativeClang_macOS" Inputs="@(BiglandsEngineNativeCFile);@(BiglandsEngineNativeHFile)" Outputs="@(BiglandsEngineNativeOutput)" Condition="('$(TargetFramework)' == '$(BiglandsEngineFramework)') And $([MSBuild]::IsOSPlatform('Windows')) And $(DesignTimeBuild) != true And $(BuildingProject) != false" BeforeTargets="CoreCompile" DependsOnTargets="_BiglandsEngineRegisterNativeOutputs">
+    <MakeDir Directories="$(OutputObjectPath)\osx-x64"/>
+    <MakeDir Directories="$(BiglandsEngineNativeOutputPath)\runtimes\osx-x64\native"/>
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' != '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClang) -DPLATFORM_MACOS -o &quot;$(OutputObjectPath)\osx-x64\%(BiglandsEngineNativeCFile.Filename)_x64.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -fPIC -target x86_64-apple-darwin" />
+    <Exec Condition="'%(BiglandsEngineNativeCFile.Extension)' == '.cpp'" Command="&quot;$(BiglandsEngineNativeClangCommand)&quot; $(BiglandsEngineNativeClangCPP) $(BiglandsEngineNativeClang) -DPLATFORM_MACOS -o &quot;$(OutputObjectPath)\osx-x64\%(BiglandsEngineNativeCFile.Filename)_x64.o&quot; -c &quot;%(BiglandsEngineNativeCFile.FullPath)&quot; -fPIC -target x86_64-apple-darwin" />
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\..\deps\\LLVM\darwin_ld.exe&quot; -arch x86_64 -w -flat_namespace -undefined dynamic_lookup -sdk_version 10.11  -macosx_version_min 10.11 -dylib -o &quot;$(BiglandsEngineNativeOutputPath)\runtimes\osx-x64\native\$(BiglandsEngineNativeOutputName).dylib&quot; @(BiglandsEngineNativeCFile->'&quot;$(OutputObjectPath)\osx-x64\%(Filename)_x64.o&quot;', ' ') @(BiglandsEngineNativePathLibsmacOS->'&quot;$(MSBuildThisFileDirectory)..\..\deps\NativePath\dotnet\osx-x64\%(Filename).a&quot;', ' ') &quot;$(MSBuildThisFileDirectory)..\..\deps\NativePath\dotnet\osx-x64\libNativePath.a&quot;" />
+
+    <!-- Workaround: forcing C# rebuild so that timestamp are up to date (ideally we should have separate input/output groups for C# and Native) -->
+    <Delete Files="@(IntermediateAssembly)"/>
+  </Target>
+  
+  <Target Name="CompileNativeClang_Clean" BeforeTargets="Clean" DependsOnTargets="_BiglandsEngineRegisterNativeOutputs">
+    <ItemGroup Condition="'$(OutputObjectPath)' != ''">
+      <ObjFiles Include="$(OutputObjectPath)\**\*.obj" />
+      <OFiles Include="$(OutputObjectPath)\**\*.o" />
+      <AFiles Include="$(OutputObjectPath)\**\*.a" />
+    </ItemGroup>
+    <Delete Files="@(BiglandsEngineNativeOutput)" />
+    <Delete Files="@(ObjFiles)" />
+    <Delete Files="@(OFiles)" />
+    <Delete Files="@(AFiles)" />
+  </Target>
+</Project>

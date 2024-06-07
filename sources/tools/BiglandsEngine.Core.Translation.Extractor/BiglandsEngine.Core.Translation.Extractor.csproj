@@ -1,0 +1,30 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <BiglandsEngineAssemblyProcessorOptions>--auto-module-initializer --serialization</BiglandsEngineAssemblyProcessorOptions>
+    <RestorePackages>true</RestorePackages>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BiglandsEngine.GNU.Getopt" />
+    <PackageReference Include="BiglandsEngine.GNU.Gettext" />
+    <PackageReference Include="System.ValueTuple" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\BiglandsEngine.Core.Design\BiglandsEngine.Core.Design.csproj" />
+    <ProjectReference Include="..\..\core\BiglandsEngine.Core\BiglandsEngine.Core.csproj" />
+    <ProjectReference Include="..\..\core\BiglandsEngine.Core.Translation\BiglandsEngine.Core.Translation.csproj" />
+    <ProjectReference Include="..\..\presentation\BiglandsEngine.Core.Translation.Presentation\BiglandsEngine.Core.Translation.Presentation.csproj" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

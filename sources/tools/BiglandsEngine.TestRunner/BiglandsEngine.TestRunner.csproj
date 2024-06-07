@@ -1,0 +1,32 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <BiglandsEngineCompilerTargetsEnable Condition="'$(BiglandsEnginePackageBuild)' == 'true'">false</BiglandsEngineCompilerTargetsEnable>
+    <BiglandsEngineCompilerTargetsEnable Condition="'$(BiglandsEngineSkipUnitTests)' == 'true'">false</BiglandsEngineCompilerTargetsEnable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Mono.Options" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Graphics.Regression\BiglandsEngine.Graphics.Regression.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.ConnectionRouter\BiglandsEngine.ConnectionRouter.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="..\..\shared\BiglandsEngine.Core.ShellHelper\BiglandsEngine.Core.ShellHelper.projitems" Label="Shared" />
+  <Import Project="..\..\shared\BiglandsEngine.NuGetResolver.Targets\BiglandsEngine.NuGetResolver.Targets.projitems" Label="Shared" />
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+
+  <PropertyGroup>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.config</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+</Project>

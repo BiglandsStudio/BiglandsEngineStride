@@ -1,0 +1,65 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <BiglandsEngineCompilerTargetsEnable Condition="'$(BiglandsEnginePackageBuild)' == 'true'">false</BiglandsEngineCompilerTargetsEnable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" />
+    <PackageReference Include="Mono.Options" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ResharperDotSettings.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ResharperDotSettings.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Assets\BiglandsEngine.Assets.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.Core.ProjectTemplating\BiglandsEngine.Core.ProjectTemplating.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="ResharperDotSettings.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ResharperDotSettings.cs</LastGenOutput>
+    </None>
+    <None Include="Templates\BiglandsEngine.UnitTests\%24ProjectName%24.csproj.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\%24ProjectName%24.Shared.targets.t4" />
+    <None Include="Templates\Common.PropertyGroups.targets.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\MainPage.xaml.cs.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\MainPage.xaml.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\App.xaml.cs.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\App.xaml.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\Info.plist.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\readme.md.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\BiglandsEngine.UnitTests.ttproj" />
+    <None Include="Templates\BiglandsEngine.UnitTests\Properties\AndroidManifest.xml.t4">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Templates\BiglandsEngine.UnitTests\Properties\AssemblyInfo.cs.t4" />
+    <None Include="Templates\BiglandsEngine.UnitTests\TestClass1.cs.t4" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Templates\BiglandsEngine.UnitTests\Resources\drawable\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Templates\BiglandsEngine.GraphicsRegressionTests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Templates\BiglandsEngine.UnitTests\Resources\BiglandsEngineSplashScreen620x300.png" />
+    <Resource Include="Templates\BiglandsEngine.UnitTests\Resources\BiglandsEngineSplashScreen480x800.png" />
+    <Resource Include="Templates\BiglandsEngine.UnitTests\Resources\BiglandsEngineIcon106x106.png" />
+    <Content Include="Templates\BiglandsEngine.UnitTests\Resources\BiglandsEngineIcon150x150.png" />
+    <Resource Include="Templates\BiglandsEngine.UnitTests\Resources\BiglandsEngineIcon54x54.png" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

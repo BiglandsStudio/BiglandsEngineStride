@@ -1,9 +1,9 @@
-Stride Launcher
+BiglandsEngine Launcher
 ==============
 
-Source for Stride launcher and installer.
+Source for BiglandsEngine launcher and installer.
 
 # Build instructions
 
-Please check out sources in `<StrideDir>\sources\launcher`.
-You can then use `msbuild Stride.build /t:Build;PackageInstaller`.
+Please check out sources in `<BiglandsEngineDir>\sources\launcher`.
+You can then use `msbuild BiglandsEngine.build /t:Build;PackageInstaller`.

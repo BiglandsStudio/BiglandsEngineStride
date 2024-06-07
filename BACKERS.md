@@ -1,27 +1,27 @@
 Sponsors & Backers
 ==================
 
-Stride is a MIT-licensed opensource project, supported by generous [sponsors and backers](https://github.com/stride3d/stride/blob/master/BACKERS.md).
+BiglandsEngine is a MIT-licensed opensource project, supported by generous [sponsors and backers](https://github.com/BiglandsEngine3d/BiglandsEngine/blob/master/BACKERS.md).
 
-[Become a sponsor or backer for the project](https://opencollective.com/stride3d).
+[Become a sponsor or backer for the project](https://opencollective.com/BiglandsEngine3d).
 
 Thank you everybody for your generous contributions!
 
-## Diamond Strider
+## Diamond BiglandsEnginer
 
 * David Jeske
 * [Marshmallow Laser Feast](http://www.marshmallowlaserfeast.com/)
 * [vvvv.org](https://vvvv.org/)
 
-## Platinum Strider
+## Platinum BiglandsEnginer
 
-## Gold Strider
+## Gold BiglandsEnginer
 * Vaclac Elias
 
-## Silver Strider
+## Silver BiglandsEnginer
 * Mitchel Albertz
 
-## Bronze Strider
+## Bronze BiglandsEnginer
 * Marian Dziubiak
 * Youness KAFIA
 * Jorn Aggror

@@ -35,7 +35,7 @@ Debug_static
 Release_static
 CodeAnalyst
 UpgradeLog*
-stride_doc_output
+BiglandsEngine_doc_output
 doc/doxygen/html
 Tools/bin
 Temp/
@@ -46,14 +46,14 @@ obj/
 .vs/
 .idea/
 Cache/
-/doc/stride_doc_output/
-/build/Stride.version
-/build/Stride.*VC.db
+/doc/BiglandsEngine_doc_output/
+/build/BiglandsEngine.version
+/build/BiglandsEngine.*VC.db
 /tools
 /externals/
 /sources/common/externals/
-/sources/tools/Stride.ShaderKeyGenerator/build/
-/sources/tools/Stride.ProjectGenerator/build/
+/sources/tools/BiglandsEngine.ShaderKeyGenerator/build/
+/sources/tools/BiglandsEngine.ProjectGenerator/build/
 /sources/tools/SLConverter/BuildRelease/Package/SLConverter-*.pdf
 /sources/tools/SLConverter/BuildRelease/Package/bin/x64/SLConverter.exe
 /sources/tools/SLConverter/BuildRelease/Package/bin/x86/SLConverter.exe
@@ -66,31 +66,31 @@ Cache/
 /tools/
 **/Properties/launchSettings.json
 launch-android.bat
-sources/tests/framework/Stride.Framework.Audio.Tests/Resources/Resource.Designer.cs
+sources/tests/framework/BiglandsEngine.Framework.Audio.Tests/Resources/Resource.Designer.cs
 Win32
 Win32Debug
 launch-ios.bat
-sources/engine/Stride.Graphics.Tests/log/
+sources/engine/BiglandsEngine.Graphics.Tests/log/
 *.androidcache
-sources/engine/Stride.Graphics/log/
-sources/engine/Stride.Graphics/Shaders/log/
-sources/engine/Stride.Input.Tests/app_data/
-sources/engine/Stride.UI.Tests/log/
-sources/engine/Stride.UI.Tests/app_data/
-sources/engine/Stride.Graphics.Tests/app_data/
-sources/tests/framework/Stride.Framework.Audio.Tests/app_data/
+sources/engine/BiglandsEngine.Graphics/log/
+sources/engine/BiglandsEngine.Graphics/Shaders/log/
+sources/engine/BiglandsEngine.Input.Tests/app_data/
+sources/engine/BiglandsEngine.UI.Tests/log/
+sources/engine/BiglandsEngine.UI.Tests/app_data/
+sources/engine/BiglandsEngine.Graphics.Tests/app_data/
+sources/tests/framework/BiglandsEngine.Framework.Audio.Tests/app_data/
 libfreetype.a
 libcore.a
 libbulletc.a
 libNativePath.a
-libstridenative_arm64.a
-libstridenative_armv7.a
-libstridenative_armv7s.a
-libstridenative_i386.a
-libstridenative_x86_64.a
+libBiglandsEnginenative_arm64.a
+libBiglandsEnginenative_armv7.a
+libBiglandsEnginenative_armv7s.a
+libBiglandsEnginenative_i386.a
+libBiglandsEnginenative_x86_64.a
 *.CachedGlyphs
 *.CachedImage
-sources/engine/Stride.Graphics/Shaders.Bytecodes/log/
+sources/engine/BiglandsEngine.Graphics/Shaders.Bytecodes/log/
 log
 x64Debug
 x64Release
@@ -110,7 +110,7 @@ samplesGenerated
 .DS_Store
 
 ## Build generated
-sources/tools/Stride iOS Relay/build/
+sources/tools/BiglandsEngine iOS Relay/build/
 DerivedData
 
 ## Various settings

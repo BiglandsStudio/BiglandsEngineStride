@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Build file used to build BiglandsEngine and package it from the command line.
+Example of use: 
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" BiglandsEngine.build /t:Package
+-->
+<Project ToolsVersion="15.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BiglandsEngineRoot>$(MSBuildThisFileDirectory)..\</BiglandsEngineRoot>
+    <BiglandsEngineSolution>$(BiglandsEngineRoot)build\BiglandsEngine</BiglandsEngineSolution>
+    <BiglandsEngineVisualStudioSolution>$(BiglandsEngineRoot)build\BiglandsEngine.VisualStudio</BiglandsEngineVisualStudioSolution>
+    <BiglandsEngineSolutionLauncher>$(BiglandsEngineRoot)build\BiglandsEngine.Launcher</BiglandsEngineSolutionLauncher>
+    <BiglandsEnginePlatforms Condition="'$(BiglandsEnginePlatforms)' == ''">Windows</BiglandsEnginePlatforms>
+    <BuildProperties>Configuration=Release;NoWarn=1591;DeployExtension=false;BiglandsEnginePlatforms=$([MSBuild]::Escape('$(BiglandsEnginePlatforms)'));BiglandsEngineGraphicsApiDependentBuildAll=$(BiglandsEngineGraphicsApiDependentBuildAll)</BuildProperties>
+    <BiglandsEngineSign Condition="'$(BiglandsEngineSign)' == ''">true</BiglandsEngineSign>
+    <BuildProperties Condition="'$(BiglandsEngineSign)' != ''">$(BuildProperties);BiglandsEngineSign=$(BiglandsEngineSign)</BuildProperties>
+    <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
+    <XunitRunnerConsoleVersion>2.4.1</XunitRunnerConsoleVersion>
+    <BiglandsEngineStoreUrl Condition="'$(BiglandsEngineStoreUrl)' == ''">https://api.nuget.org/v3/index.json</BiglandsEngineStoreUrl>
+    <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 19.4\bin\x86\AdvancedInstaller.com')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 19.4\bin\x86\AdvancedInstaller.com</AdvancedInstallerPath>
+    <BiglandsEngineBuildPrerequisitesInstaller Condition="'$(BiglandsEngineBuildPrerequisitesInstaller)' == ''">true</BiglandsEngineBuildPrerequisitesInstaller>
+  </PropertyGroup>
+
+  <UsingTask TaskName="BiglandsEngine.GitVersioning.GenerateVersionFile" AssemblyFile="$(BiglandsEngineRoot)deps\BiglandsEngine.GitVersioning\bin\Debug\net472\BiglandsEngine.GitVersioning.dll" />
+  
+  <Target Name="Help">
+    <Message Importance="high" Text="TODO"/>
+  </Target>
+  
+  <!--
+  VSIX BiglandsEngine plugin
+  Don't forget to build for VS2013 by using MSBuild 12.0, 
+  or if you're using a newer version of MSBuild, pass the flag /p:VisualStudioVersion=12.0 when calling MSBuild in the command line.
+  -->
+  <Target Name="VSIXPlugin" DependsOnTargets="Restore">
+    <ItemGroup>
+      <FilesToDeleteVSIX Include="$(BiglandsEngineRoot)bin\vsix\*.nupkg"/>
+    </ItemGroup>
+
+    <Delete Files="@(FilesToDeleteVSIX)"/>
+
+    <MSBuild Targets="Restore" Projects="$(BiglandsEngineVisualStudioSolution).sln" />
+    <MSBuild Targets="BiglandsEngine_VisualStudio_Package;BiglandsEngine_VisualStudio_PackageInstall" Projects="$(BiglandsEngineVisualStudioSolution).sln" Properties="$(BuildProperties);Platform=Any CPU"/>
+    <Exec Command='"$(NuGetPath)" pack "$(BiglandsEngineRoot)sources\tools\BiglandsEngine.VisualStudio.Package\BiglandsEngine.VisualStudio.Package.nuspec" -BasePath "$(BiglandsEngineRoot)sources\tools\BiglandsEngine.VisualStudio.Package" -OutputDirectory "$(BiglandsEngineRoot)bin\vsix"' />
+ 
+    <Exec Command='sign\SignClient sign -c "sign\appsettings.json" --input "..\bin\vsix\*.nupkg" --name "BiglandsEngine" --user "$(BiglandsEngineSignUser)" --secret "$(BiglandsEngineSignSecret.Replace("%", "%%"))" -f "sign\nupkgfilter.txt"' EchoOff="true" />
+  </Target>
+  
+  <!--
+  Package Installer: install-prerequisites.exe
+  -->
+  <Target Name="PrerequisitesInstaller" DependsOnTargets="SignCredentialsCheck">
+    <Delete Files="$(BiglandsEngineRoot)Bin\Prerequisites\install-prerequisites.exe"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(BiglandsEngineRoot)sources\prerequisites\prerequisites.aip"' EnvironmentVariables="BiglandsEngineSignUser=&quot;$(BiglandsEngineSignUser)&quot;;BiglandsEngineSignSecret=&quot;$(BiglandsEngineSignSecret)&quot;"/>
+    <!-- Note: this exe will be signed as part of GameStudio.nupkg -->
+  </Target>
+
+  <!--
+  Perform a full build: Build, Package
+  -->
+  <Target Name="FullBuild">
+    <CallTarget Targets="Build"/>
+    <CallTarget Targets="Package"/>
+    <CallTarget Targets="VSIXPlugin"/>
+  </Target>
+  
+  <!--
+  Publish BiglandsEngine nupkg from this folder to the store
+  -->
+  <Target Name="Publish">
+    <Error Condition="'$(BiglandsEngineStoreApiKey)' == ''" Text="Missing env variable BiglandsEngineStoreApiKey"/>
+    <!-- Waiting 30min in case NuGet.Gallery/Server takes time to process -->
+    <ItemGroup>
+      <NuGetPackage Include="..\bin\packages\*.nupkg"/>
+      <!-- Remove GameStudio (pushed in a second stage) -->
+      <NuGetPackage Remove="@(NuGetPackage)" Condition="$([System.String]::Copy('%(Filename)').Contains('BiglandsEngine.GameStudio'))"/>
+      <!-- Remove Samples.Templates (we use -SkipDuplicate since version is rarely bumped) -->
+      <NuGetPackage Remove="@(NuGetPackage)" Condition="$([System.String]::Copy('%(Filename)').Contains('BiglandsEngine.Samples.Templates'))"/>
+    </ItemGroup>
+    <Exec Command='"$(NuGetPath)" push %(NuGetPackage.Identity) -ApiKey $(BiglandsEngineStoreApiKey) -Source $(BiglandsEngineStoreUrl) -Timeout 1800 -NoSymbols -SkipDuplicate'/>
+    <Exec Command='"$(NuGetPath)" push ..\bin\packages\BiglandsEngine.Samples.Templates*.nupkg -ApiKey $(BiglandsEngineStoreApiKey) -Source $(BiglandsEngineStoreUrl) -Timeout 1800 -NoSymbols -SkipDuplicate'/>
+    <!-- Push GameStudio so that dependencies are already uploaded -->
+    <Exec Command='"$(NuGetPath)" push ..\bin\packages\BiglandsEngine.GameStudio*.nupkg -ApiKey $(BiglandsEngineStoreApiKey) -Source $(BiglandsEngineStoreUrl) -Timeout 1800 -NoSymbols'/>
+  </Target>
+
+  <!--
+  Publish VSIX nupkg from this folder to the store
+  -->
+  <Target Name="PublishVSIX">
+    <Error Condition="'$(BiglandsEngineStoreApiKey)' == ''" Text="Missing env variable BiglandsEngineStoreApiKey"/>
+    <Exec Command='"$(NuGetPath)" push ..\bin\vsix\*.nupkg -ApiKey $(BiglandsEngineStoreApiKey) -Source $(BiglandsEngineStoreUrl) -NoSymbols'/>
+  </Target>
+  
+  <!--
+  Build BiglandsEngine: Windows, Android, iOS, Windows 10 (UWP)
+  -->
+  <Target Name="Clean">
+    <Exec Command="RMDIR /Q /S $(BiglandsEngineRoot)\Bin"/>
+  </Target>
+  
+  <!-- Package -->
+  <Target Name="PreparePackageBuild">
+    <PropertyGroup>
+      <BuildProperties>$(BuildProperties);BiglandsEnginePublicApi=true;BiglandsEnginePackageBuild=true</BuildProperties>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <FilesToDeletePackages Include="$(BiglandsEngineRoot)bin\packages\*.nupkg"/>
+    </ItemGroup>
+
+    <Delete Files="@(FilesToDeletePackages)"/>
+
+    <!-- Make sure BiglandsEngine.GitVersioning is built to run the task to update package version.
+         It might be better to move it to a prebuilt assembly if that becomes a problem.
+    -->
+    <MSBuild Targets="Restore" Projects="$(BiglandsEngineRoot)deps\BiglandsEngine.GitVersioning\BiglandsEngine.GitVersioning.csproj"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineRoot)deps\BiglandsEngine.GitVersioning\BiglandsEngine.GitVersioning.csproj"/>
+    
+    <!-- Create SharedAssemblyInfo.NuGet.cs with Git information (different between official build and internal builds) -->
+    <GenerateVersionFile RootDirectory="$(BiglandsEngineRoot)" VersionFile="sources\shared\SharedAssemblyInfo.cs" GeneratedVersionFile="sources\shared\SharedAssemblyInfo.NuGet.cs" RevisionGitHeight="true" SpecialVersionGitCommit="true">
+      <Output TaskParameter="NuGetVersion" PropertyName="BiglandsEnginePackageVersion"/>
+    </GenerateVersionFile>
+
+    <Message Text="Done preparing build for version $(BiglandsEnginePackageVersion)"/>
+    <Message Text="##teamcity[buildNumber '$(BiglandsEnginePackageVersion)']" Importance="High" Condition="'$(TEAMCITY_BUILD_PROPERTIES_FILE)' != '' " />
+  </Target>
+  <PropertyGroup>
+    <_BiglandsEnginePackageTargetPrerequisitesInstaller Condition="'$(BiglandsEngineBuildPrerequisitesInstaller)' == 'true'">PrerequisitesInstaller</_BiglandsEnginePackageTargetPrerequisitesInstaller>
+  </PropertyGroup>
+  <Target Name="Package" DependsOnTargets="PreparePackageBuild;$(_BiglandsEnginePackageTargetPrerequisitesInstaller);Build;SignPackage;VSIXPlugin"/>
+
+  <Target Name="RestoreInternal">
+    <MSBuild Targets="Restore" Projects="$(BiglandsEngineSolution).sln" Properties="BiglandsEngineGraphicsApiDependentBuildAll=$(BiglandsEngineGraphicsApiDependentBuildAll);BiglandsEngineGraphicsApis=$(BiglandsEngineGraphicsApis);BiglandsEnginePlatforms=$(BiglandsEnginePlatforms)" />
+  </Target>
+  
+  <Target Name="Restore">
+    <CallTarget Targets="RestoreInternal" />
+  </Target>
+
+  <Target Name="Build">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution);BiglandsEngineGraphicsApiDependentBuildAll=$(BiglandsEngineGraphicsApiDependentBuildAll)"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+
+  <Target Name="BuildRuntime">
+    <PropertyGroup>
+      <BiglandsEngineSolution>$(BiglandsEngineSolution).Runtime</BiglandsEngineSolution>
+    </PropertyGroup>
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution)"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).sln" Properties="$(BuildProperties)"/>
+  </Target>
+  
+  <Target Name="BuildWindows">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution);BiglandsEngineGraphicsApiDependentBuildAll=$(BiglandsEngineGraphicsApiDependentBuildAll)"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).sln" Properties="$(BuildProperties);BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true;BiglandsEngineGraphicsApiDependentBuildAll=$(BiglandsEngineGraphicsApiDependentBuildAll)"/>
+  </Target>
+
+  <Target Name="BuildWindowsDirect3D11">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution).Runtime"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).Runtime.sln" Properties="$(BuildProperties);BiglandsEngineGraphicsApis=Direct3D11;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target>
+  
+  <Target Name="BuildWindowsDirect3D12">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution).Runtime;BiglandsEngineGraphicsApis=Direct3D12"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).Runtime.sln" Properties="$(BuildProperties);BiglandsEngineGraphicsApis=Direct3D12;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target>
+
+  <Target Name="BuildWindowsOpenGL">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution).Runtime;BiglandsEngineGraphicsApis=OpenGL"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).Runtime.sln" Properties="$(BuildProperties);BiglandsEngineGraphicsApis=OpenGL;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target>
+
+  <Target Name="BuildWindowsOpenGLES">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution).Runtime;BiglandsEngineGraphicsApis=OpenGLES"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).Runtime.sln" Properties="$(BuildProperties);BiglandsEngineGraphicsApis=OpenGLES;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target>
+
+  <Target Name="BuildAndroid">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=Android;BiglandsEngineSolution=$(BiglandsEngineSolution).Android"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).Android.sln" Properties="$(BuildProperties);BiglandsEnginePlatforms=Android;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target>
+
+  <Target Name="BuildiOS">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=iOS;BiglandsEngineSolution=$(BiglandsEngineSolution).iOS"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).iOS.sln" Properties="$(BuildProperties);BiglandsEnginePlatforms=iOS;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target>
+  
+  <Target Name="BuildUWP">
+    <PropertyGroup>
+      <BiglandsEngineSolution>$(BiglandsEngineSolution).Runtime</BiglandsEngineSolution>
+      <BiglandsEnginePlatforms>UWP</BiglandsEnginePlatforms>
+    </PropertyGroup>
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution)"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).sln" Properties="$(BuildProperties);BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target>
+  
+  <Target Name="BuildWindowsVulkan">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution).Runtime;BiglandsEngineGraphicsApis=Vulkan"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).Runtime.sln" Properties="$(BuildProperties);BiglandsEngineGraphicsApis=Vulkan;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target>
+  
+  <Target Name="BuildLinux">
+    <PropertyGroup>
+      <BiglandsEngineSolution>$(BiglandsEngineSolution).Runtime</BiglandsEngineSolution>
+      <BiglandsEnginePlatforms>Linux</BiglandsEnginePlatforms>
+    </PropertyGroup>
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution);BiglandsEngineGraphicsApiDependentBuildAll=$(BiglandsEngineGraphicsApiDependentBuildAll)"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).sln" Properties="$(BuildProperties);BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineGraphicsApis=OpenGL;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true;BiglandsEngineGraphicsApiDependentBuildAll=$(BiglandsEngineGraphicsApiDependentBuildAll)"/>
+  </Target> 
+
+  <Target Name="BuildLinuxVulkan">
+    <PropertyGroup>
+      <BiglandsEngineSolution>$(BiglandsEngineSolution).Runtime</BiglandsEngineSolution>
+      <BiglandsEnginePlatforms>Linux</BiglandsEnginePlatforms>
+    </PropertyGroup>
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineSolution=$(BiglandsEngineSolution);BiglandsEngineGraphicsApis=Vulkan"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).sln" Properties="$(BuildProperties);BiglandsEnginePlatforms=$(BiglandsEnginePlatforms);BiglandsEngineGraphicsApis=Vulkan;BiglandsEngineSkipAutoPack=true;BiglandsEngineSkipUnitTests=true"/>
+  </Target> 
+  
+  <Target Name="BuildmacOS">
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEngineSolution=$(BiglandsEngineSolution).macOS"/>
+    <MSBuild Targets="Build" Projects="$(BiglandsEngineSolution).macOS.sln" Properties="$(BuildProperties);Platform=macOS"/>
+  </Target> 
+
+  <Target Name="DownloadXunitRunnerConsole">
+    <MakeDir Directories="$(MSBuildThisFileDirectory)packages"/>
+    <PropertyGroup>
+      <XunitRunnerConsolePathDefault>$(MSBuildThisFileDirectory)packages\xunit.runner.console.$(XunitRunnerConsoleVersion)\tools\net472\xunit.console.exe</XunitRunnerConsolePathDefault>
+      <XunitRunnerConsolePathX86>$(MSBuildThisFileDirectory)packages\xunit.runner.console.$(XunitRunnerConsoleVersion)\tools\net472\xunit.console.x86.exe</XunitRunnerConsolePathX86>
+    </PropertyGroup>
+    <Exec Command='"$(NuGetPath)" install xunit.runner.console -Version $(XunitRunnerConsoleVersion)' Condition="!Exists('$(XunitRunnerConsolePathDefault)')" WorkingDirectory="$(MSBuildThisFileDirectory)packages" />
+    <Error Text="Could not find xunit.runner at expected location [$(XunitRunnerConsolePathDefault)]" Condition="!Exists('$(XunitRunnerConsolePathDefault)')"/>
+  </Target>
+  
+  <Target Name="RunTestsWindows" DependsOnTargets="DownloadXunitRunnerConsole">
+    <!-- Remove artifacts generated during previous run -->
+    <Delete Files="$(MSBuildThisFileDirectory)..\tests\local\**\*.*" />
+    <!-- By default, enable all known categories -->
+    <PropertyGroup>
+      <BiglandsEngineTestCategories Condition="'$(BiglandsEngineTestCategories)' == ''">Simple;Game;VSPackage</BiglandsEngineTestCategories>
+    </PropertyGroup>
+    <CreateItem Include="$(BiglandsEngineTestCategories)">
+      <Output TaskParameter="Include" ItemName="BiglandsEngineTestCategoriesItem"/>
+    </CreateItem>
+    <!-- Restore NuGet packages -->
+    <Message Importance="High" Text="Restoring NuGet packages"/>
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileDirectory)BiglandsEngine.sln" />
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileDirectory)BiglandsEngine.Tests.%(BiglandsEngineTestCategoriesItem.Identity).slnf" />
+    <!-- Build -->
+    <Message Importance="High" Text="Building unit tests"/>
+    <MSBuild Projects="$(MSBuildThisFileDirectory)BiglandsEngine.Tests.%(BiglandsEngineTestCategoriesItem.Identity).slnf" />
+    <!-- Run tests -->
+    <Message Importance="High" Text="Running unit tests"/>
+    <Exec Command="dotnet test BiglandsEngine.Tests.%(BiglandsEngineTestCategoriesItem.Identity).slnf --no-build" IgnoreStandardErrorWarningFormat="true"/>
+  </Target>
+  
+  <ItemGroup>
+    <MobileUnitTestProject Include="$(BiglandsEngineRoot)sources\engine\BiglandsEngine.Engine.Tests\BiglandsEngine.Engine.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(BiglandsEngineRoot)sources\engine\BiglandsEngine.Audio.Tests\BiglandsEngine.Audio.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(BiglandsEngineRoot)sources\engine\BiglandsEngine.Graphics.Tests\BiglandsEngine.Graphics.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(BiglandsEngineRoot)sources\engine\BiglandsEngine.Graphics.Tests.10_0\BiglandsEngine.Graphics.Tests.10_0.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(BiglandsEngineRoot)sources\engine\BiglandsEngine.Input.Tests\BiglandsEngine.Input.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(BiglandsEngineRoot)sources\engine\BiglandsEngine.Particles.Tests\BiglandsEngine.Particles.Tests.$(PlatformToBuild).csproj"/>
+    <MobileUnitTestProject Include="$(BiglandsEngineRoot)sources\engine\BiglandsEngine.Physics.Tests\BiglandsEngine.Physics.Tests.$(PlatformToBuild).csproj"/>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <MobileUnitTestApk Include="$(BiglandsEngineRoot)\Bin\Android\Tests\OpenGLES\BiglandsEngine.Engine.Tests\BiglandsEngine.Engine.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(BiglandsEngineRoot)\Bin\Android\Tests\OpenGLES\BiglandsEngine.Physics.Tests\BiglandsEngine.Physics.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(BiglandsEngineRoot)\Bin\Android\Tests\OpenGLES\BiglandsEngine.Audio.Tests\BiglandsEngine.Audio.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(BiglandsEngineRoot)\Bin\Android\Tests\OpenGLES\BiglandsEngine.Graphics.Tests.10_0\BiglandsEngine.Graphics.Tests_10_0-Signed.apk"/>
+    <MobileUnitTestApk Include="$(BiglandsEngineRoot)\Bin\Android\Tests\OpenGLES\BiglandsEngine.Graphics.Tests\BiglandsEngine.Graphics.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(BiglandsEngineRoot)\Bin\Android\Tests\OpenGLES\BiglandsEngine.Input.Tests\BiglandsEngine.Input.Tests-Signed.apk"/>
+    <MobileUnitTestApk Include="$(BiglandsEngineRoot)\Bin\Android\Tests\OpenGLES\BiglandsEngine.Particles.Tests\BiglandsEngine.Particles.Tests-Signed.apk"/>
+  </ItemGroup>
+  
+  <Target Name="RunTestsMobile" DependsOnTargets="DownloadXunitRunnerConsole" Outputs="%(MobileUnitTestProject.Identity)">
+    <PropertyGroup>
+      <BiglandsEngineRoot>$(MSBuildThisFileDirectory)..\</BiglandsEngineRoot>
+      <BiglandsEnginePlatform></BiglandsEnginePlatform>
+      <BiglandsEnginePlatform Condition="'$(PlatformToBuild)' == 'iOS'">Platform=iPhone</BiglandsEnginePlatform>
+      <BiglandsEnginePlatform Condition="'$(PlatformToBuild)' == 'Android'">Platform=Android</BiglandsEnginePlatform>
+      <BiglandsEngineBuildOptions></BiglandsEngineBuildOptions>
+      <BiglandsEngineBuildOptions Condition="'$(PlatformToBuild)' == 'iOS'">ServerAddress=pc13095;ServerUser=virgile;BuildIpa=true;MtouchUseLlvm=true</BiglandsEngineBuildOptions>
+      <BiglandsEngineBuildTargets>Rebuild</BiglandsEngineBuildTargets>
+      <BiglandsEngineBuildTargets Condition="'$(PlatformToBuild)' == 'Android'">SignAndroidPackage</BiglandsEngineBuildTargets>
+      <BiglandsEngineBuildConfig>Release</BiglandsEngineBuildConfig>
+      <BiglandsEngineBuildConfig Condition="'$(PlatformToBuild)' == 'Windows'">Debug</BiglandsEngineBuildConfig>
+    </PropertyGroup>
+  
+    <MSBuild Projects ="%(MobileUnitTestProject.Identity)" Targets="SignAndroidPackage"
+             Properties="SolutionName=BiglandsEngine.Android; SolutionDir=$(MSBuildThisFileDirectory);$(BiglandsEnginePlatform);Configuration=$(BiglandsEngineBuildConfig);$(BiglandsEngineBuildOptions)">
+    </MSBuild>
+    <Exec IgnoreExitCode="True" Command='taskkill /F /FI "Imagename eq BiglandsEngine.Core.Assets.CompilerApp*"' />
+    
+    <Exec Condition="'$(PlatformToBuild)' == 'Android'" Command="$(BiglandsEngineRoot)sources\tools\BiglandsEngine.TestRunner\bin\Release\net472\BiglandsEngine.TestRunner.exe %(MobileUnitTestApk.Identity)">
+      <Output TaskParameter="ExitCode" ItemName="exitCode" />
+    </Exec>
+  </Target>
+  
+  <!--
+  Package Launcher
+  -->
+  <Target Name="PackageLauncher" DependsOnTargets="LauncherPrerequisitesInstaller">
+    <ItemGroup>
+      <FilesToDeleteLauncher Include="$(BiglandsEngineRoot)bin\launcher\*.nupkg"/>
+    </ItemGroup>
+
+    <!-- Note: we avoid building again if BuildWindows was already ran just before -->
+    <Delete Files="@(FilesToDeleteLauncher)"/>
+    
+    <!-- Generate the nuget package for the launcher application -->
+    <Exec Command='"$(NuGetPath)" pack "$(BiglandsEngineRoot)sources\launcher\BiglandsEngine.Launcher\BiglandsEngine.Launcher.nuspec" -BasePath "$(BiglandsEngineRoot)sources\launcher\BiglandsEngine.Launcher\bin\Release\publish" -OutputDirectory "$(BiglandsEngineRoot)bin\launcher"' />
+
+    <Exec Condition="'$(BiglandsEngineSign)' == 'true'" Command='sign\SignClient sign -c "sign\appsettings.json" --input "..\bin\launcher\*.nupkg" --name "BiglandsEngine" --user "$(BiglandsEngineSignUser)" --secret "$(BiglandsEngineSignSecret.Replace("%", "%%"))"' EchoOff="true" />
+  </Target>
+  
+  <!--
+  Package Installer: BiglandsEngineSetup.exe
+  -->
+  <Target Name="PackageInstaller" DependsOnTargets="PackageLauncher;SignCredentialsCheck">
+    <!-- Run advanced installer -->
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(BiglandsEngineRoot)sources\launcher\Setup\setup.aip"' EnvironmentVariables="BiglandsEngineSignUser=&quot;$(BiglandsEngineSignUser)&quot;;BiglandsEngineSignSecret=&quot;$(BiglandsEngineSignSecret)&quot;"/>
+
+    <Copy SourceFiles="$(BiglandsEngineRoot)sources\launcher\Setup\setup-SetupFiles\BiglandsEngineSetup.exe" DestinationFolder="$(BiglandsEngineRoot)bin\launcher"/>
+  </Target>
+  
+  <!--
+  Package Installer: launcher-prerequisites.exe
+  -->
+  <Target Name="LauncherPrerequisitesInstaller" DependsOnTargets="SignCredentialsCheck">
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(BiglandsEngineRoot)sources\launcher\Prerequisites\launcher-prerequisites.aip"' EnvironmentVariables="BiglandsEngineSignUser=&quot;$(BiglandsEngineSignUser)&quot;;BiglandsEngineSignSecret=&quot;$(BiglandsEngineSignSecret)&quot;"/>
+  </Target>
+
+  <!--
+  Perform a full build: Build, Package and PackageInstaller
+  -->
+  <Target Name="FullBuildLauncher">
+    <CallTarget Targets="BuildLauncher"/>
+    <CallTarget Targets="PackageInstaller"/>
+  </Target>
+  
+  <!--
+  Publish Launcher nupkg from this folder to the store
+  -->
+  <Target Name="PublishLauncher">
+    <Error Condition="'$(BiglandsEngineStoreApiKey)' == ''" Text="Missing env variable BiglandsEngineStoreApiKey"/>
+    <Exec Command='"$(NuGetPath)" push ..\bin\launcher\*.nupkg -ApiKey $(BiglandsEngineStoreApiKey) -Source $(BiglandsEngineStoreUrl) -NoSymbols'/>
+  </Target>
+  
+  <Target Name="BuildLauncher" DependsOnTargets="SignCredentialsCheck">
+    <PropertyGroup>
+      <BiglandsEngineSolution>BiglandsEngine.Launcher</BiglandsEngineSolution>
+    </PropertyGroup>
+    <MSBuild Targets="Restore" Projects="$(MSBuildThisFileFullPath)" Properties="BiglandsEnginePlatforms=Windows;BiglandsEngineSolution=$(BiglandsEngineSolution)"/>
+    <MSBuild Projects="..\sources\launcher\BiglandsEngine.Launcher\BiglandsEngine.Launcher.csproj" Targets="Publish" Properties="$(BuildProperties);PublishProfile=FolderProfile;SolutionName=BiglandsEngine.Launcher" />
+  </Target>
+
+  <Target Name="SignCredentialsCheck" Condition="'$(BiglandsEngineSign)' == 'true'">
+    <Error Condition="'$(BiglandsEngineSignUser)' == ''" Text="BiglandsEngineSignUser is not set. Please set BiglandsEngineSign to false if you don't want to sign using code certificates." />
+    <Error Condition="'$(BiglandsEngineSignSecret)' == ''" Text="BiglandsEngineSignSecret is not set. Please set BiglandsEngineSign to false if you don't want to sign using code certificates." />
+  </Target>
+
+  <Target Name="SignPackage" DependsOnTargets="SignCredentialsCheck" Condition="'$(BiglandsEngineSign)' == 'true'">
+    <!-- nupkg containing executables to sign -->
+    <Message Importance="high" Text="Signing packages"/> 
+    <Exec Command='sign\SignClient sign -c "sign\appsettings.json" --input "..\bin\packages\*.nupkg" --name "BiglandsEngine" --user "$(BiglandsEngineSignUser)" --secret "$(BiglandsEngineSignSecret.Replace("%", "%%"))" -f "sign\nupkgfilter.txt"' EchoOff="true" />
+  </Target>
+
+</Project>

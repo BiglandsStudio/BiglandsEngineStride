@@ -1,0 +1,32 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>    
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ServiceWire" />
+    <PackageReference Include="Mono.Options" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\assets\BiglandsEngine.Core.Assets\BiglandsEngine.Core.Assets.csproj" />
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Engine\BiglandsEngine.Engine.csproj" />
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Shaders.Parser\BiglandsEngine.Shaders.Parser.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.VisualStudio.Commands.Interfaces\BiglandsEngine.VisualStudio.Commands.Interfaces.csproj" />
+    <!-- Use PrivateReference="All" so that it is not a NuGet dependency, and to make sure we don't have any transitive reference of VS.Package being used (we should have explicit ProjectReference to everything we need) -->
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="..\..\shared\BiglandsEngine.NuGetResolver.Targets\BiglandsEngine.NuGetResolver.Targets.projitems" Label="Shared" />
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

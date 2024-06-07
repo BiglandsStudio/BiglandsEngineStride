@@ -1,0 +1,214 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <!--
+  Various development tools to build project/packages with graphics API dependent parts
+  
+  Packages will be built with following layout:
+     lib/netstandard2.0/Direct3D11/MyAssembly.dll
+     lib/netstandard2.0/MyAssembly.dll (placeholder so that we can piggyback on "RuntimeCopyLocalItems" from NET.Sdk)
+  -->
+  
+  <!-- ==================================================================
+       Targets used for Build to enumerate each BiglandsEngineGraphicsApi for each TargetFramework
+  -->
+  <Target Name="_BiglandsEngineQueryGraphicsApis" Returns="@(_BiglandsEngineGraphicsApisItemsInternal)" Condition="'$(BiglandsEngineProjectType)' != 'Cpp'">
+    <!-- Use a fake runtime identifier to transmit BiglandsEngineGraphicsApiDependent -->
+    <ItemGroup Condition="'$(BiglandsEngineGraphicsApis)' != ''">
+      <_BiglandsEngineGraphicsApisItemsInternal Include="$(BiglandsEngineGraphicsApis)" TargetFramework="$(TargetFramework)" BiglandsEngineGraphicsApiDependent="$(BiglandsEngineGraphicsApiDependent)" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(BiglandsEngineGraphicsApis)' == ''">
+      <_BiglandsEngineGraphicsApisItemsInternal Include="$(BiglandsEngineGraphicsApi)" TargetFramework="$(TargetFramework)" BiglandsEngineGraphicsApiDependent="$(BiglandsEngineGraphicsApiDependent)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="_ComputeTargetFrameworkItems" Returns="@(InnerOutput)">
+    <ItemGroup>
+      <_TargetFramework Condition="'$(TargetFrameworks)' != ''" Include="$(TargetFrameworks)" />
+      <_TargetFramework Condition="'$(TargetFrameworks)' == ''" Include="$(TargetFramework)" />
+      <!-- Make normalization explicit: Trim; Deduplicate by keeping first occurrence, case insensitive -->
+      <_TargetFrameworkNormalized Include="@(_TargetFramework-&gt;Trim()-&gt;Distinct())" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(BiglandsEngineGraphicsApiDependent)' != 'true'">
+      <_InnerBuildProjects Include="$(MSBuildProjectFile)">
+        <AdditionalProperties>TargetFramework=%(_TargetFrameworkNormalized.Identity)</AdditionalProperties>
+      </_InnerBuildProjects>
+    </ItemGroup>
+    <MSBuild Projects="$(MSBuildProjectFile)"
+             Condition="'$(BiglandsEngineGraphicsApiDependent)' == 'true'"
+             BuildInParallel="$(BuildInParallel)"
+             Properties="TargetFramework=%(_TargetFrameworkNormalized.Identity)"
+             RemoveProperties="BiglandsEngineGraphicsApi"
+             Targets="_BiglandsEngineQueryGraphicsApis">
+      <Output ItemName="_BiglandsEngineGraphicsApisItems" TaskParameter="TargetOutputs"  />
+    </MSBuild>
+    <ItemGroup Condition="'$(BiglandsEngineGraphicsApiDependent)' == 'true'">
+      <_TargetFrameworkWithBiglandsEngineGraphicsApi Include="@(_BiglandsEngineGraphicsApisItems->'%(OriginalItemSpec)')" BiglandsEngineGraphicsApi="%(_BiglandsEngineGraphicsApisItems.Identity)" />
+      <_InnerBuildProjects Include="$(MSBuildProjectFile)">
+        <AdditionalProperties Condition="'%(_TargetFrameworkWithBiglandsEngineGraphicsApi.BiglandsEngineGraphicsApiDependent)' != 'true'">TargetFramework=%(_TargetFrameworkWithBiglandsEngineGraphicsApi.TargetFramework)</AdditionalProperties>
+        <AdditionalProperties Condition="'%(_TargetFrameworkWithBiglandsEngineGraphicsApi.BiglandsEngineGraphicsApiDependent)' == 'true'">TargetFramework=%(_TargetFrameworkWithBiglandsEngineGraphicsApi.TargetFramework);BiglandsEngineGraphicsApi=%(_TargetFrameworkWithBiglandsEngineGraphicsApi.BiglandsEngineGraphicsApi)</AdditionalProperties>
+      </_InnerBuildProjects>
+    </ItemGroup>
+  </Target>
+
+  <!-- ==================================================================
+       Targets to detect if a project reference (_MSBuildProjectReferenceExistent) is BiglandsEngineGraphicsApiDependent -->
+  <Target Name="_BiglandsEngineQueryGraphicsApiDependent" Returns="@(_BiglandsEngineGraphicsApiDependentItemsInternal)" Condition="'$(BiglandsEngineProjectType)' != 'Cpp'">
+    <!-- Use a fake runtime identifier to transmit BiglandsEngineGraphicsApiDependent -->
+    <ItemGroup>
+      <_BiglandsEngineGraphicsApiDependentItemsInternal Include="BiglandsEngine_fake_graphics_api" BiglandsEngineGraphicsApiDependent="$(BiglandsEngineGraphicsApiDependent)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="_BiglandsEngineProjectReferenceGraphicsApiDependent" BeforeTargets="PrepareProjectReferences">
+    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)"
+             BuildInParallel="$(BuildInParallel)"
+             Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform); %(_MSBuildProjectReferenceExistent.SetTargetFramework);"
+             RemoveProperties="BiglandsEngineGraphicsApi"
+             Targets="_BiglandsEngineQueryGraphicsApiDependent"
+             SkipNonexistentTargets="true">
+      <Output ItemName="_BiglandsEngineGraphicsApiDependentItems" TaskParameter="TargetOutputs"  />
+    </MSBuild>
+    <PropertyGroup>
+      <!-- Transmit current graphics API. This is useful in case we have transitions such as: Direct3D12->ProjectWithoutGraphicsApi->Direct3D12
+           otherwise it would try to build 3rd project twice (due to the reference from ProjectWithoutGraphicsApi). -->
+      <_BiglandsEngineGraphicsApiCurrent>$(BiglandsEngineGraphicsApi)</_BiglandsEngineGraphicsApiCurrent>
+      <!-- We use a fallback in case the project without graphics API is the project initiating the build. -->
+      <_BiglandsEngineGraphicsApiCurrent Condition="'$(_BiglandsEngineGraphicsApiCurrent)' == '' And '$(BiglandsEngineGraphicsApis)' != ''">$(BiglandsEngineGraphicsApis.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</_BiglandsEngineGraphicsApiCurrent>
+      <_BiglandsEngineGraphicsApiCurrent Condition="'$(_BiglandsEngineGraphicsApiCurrent)' == ''">$(BiglandsEngineDefaultGraphicsApi)</_BiglandsEngineGraphicsApiCurrent>
+      <_BiglandsEngineGraphicsApiCurrent Condition="'$(_BiglandsEngineGraphicsApiCurrent)' == ''">Direct3D11</_BiglandsEngineGraphicsApiCurrent>
+    </PropertyGroup>
+    <ItemGroup>
+      <_MSBuildProjectReferenceExistent Remove="@(_BiglandsEngineGraphicsApiDependentItems->'%(OriginalItemSpec)')" />
+      <_MSBuildProjectReferenceExistent Include="@(_BiglandsEngineGraphicsApiDependentItems->'%(OriginalItemSpec)')" Condition="'%(_BiglandsEngineGraphicsApiDependentItems.BiglandsEngineGraphicsApiDependent)' != 'true'" />
+      <_MSBuildProjectReferenceExistent Include="@(_BiglandsEngineGraphicsApiDependentItems->'%(OriginalItemSpec)')" Condition="'%(_BiglandsEngineGraphicsApiDependentItems.BiglandsEngineGraphicsApiDependent)' == 'true'">
+        <BiglandsEngineGraphicsApiDependent>%(_BiglandsEngineGraphicsApiDependentItems.BiglandsEngineGraphicsApiDependent)</BiglandsEngineGraphicsApiDependent>
+        <BiglandsEngineGraphicsApi>$(_BiglandsEngineGraphicsApiCurrent)</BiglandsEngineGraphicsApi>
+        <SetTargetFramework>%(_BiglandsEngineGraphicsApiDependentItems.SetTargetFramework);BiglandsEngineGraphicsApi=$(_BiglandsEngineGraphicsApiCurrent)</SetTargetFramework>
+      </_MSBuildProjectReferenceExistent>
+      <_MSBuildProjectReferenceExistent Condition="'%(_MSBuildProjectReferenceExistent.BiglandsEngineGraphicsApiDependent)' != 'true'">
+        <GlobalPropertiesToRemove>%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove);BiglandsEngineGraphicsApi</GlobalPropertiesToRemove>
+      </_MSBuildProjectReferenceExistent>
+    </ItemGroup>
+  </Target>
+
+  <!-- ==================================================================
+       Target to generate Package with proper layout
+  -->
+  <Target Name="_BiglandsEnginePackUpdateOutputTargetPath">
+    <!-- For default graphics API, we do a copy rather than a move,
+         so that top-level folder contains default libraries and "RuntimeCopyLocalItems" target works properly -->
+    <ItemGroup Condition="'$(BiglandsEngineGraphicsApi)' == '$(BiglandsEngineDefaultGraphicsApi)'">
+      <SatelliteDllsProjectOutputGroupOutput Include="@(SatelliteDllsProjectOutputGroupOutput)">
+        <TargetPath Condition="'%(SatelliteDllsProjectOutputGroupOutput.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(SatelliteDllsProjectOutputGroupOutput.TargetPath)</TargetPath>
+      </SatelliteDllsProjectOutputGroupOutput>
+      <BuiltProjectOutputGroupOutput Include="@(BuiltProjectOutputGroupOutput)">
+        <TargetPath Condition="'%(BuiltProjectOutputGroupOutput.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(BuiltProjectOutputGroupOutput.TargetPath)</TargetPath>
+      </BuiltProjectOutputGroupOutput>
+      <DocumentationProjectOutputGroupOutput Include="@(DocumentationProjectOutputGroupOutput)">
+        <TargetPath Condition="'%(DocumentationProjectOutputGroupOutput.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(DocumentationProjectOutputGroupOutput.TargetPath)</TargetPath>
+      </DocumentationProjectOutputGroupOutput>
+      <_PathToPriFile Include="@(_PathToPriFile)">
+        <TargetPath Condition="'%(_PathToPriFile.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(_PathToPriFile.TargetPath)</TargetPath>
+      </_PathToPriFile>
+      <BuildOutputInPackage Include="@(BuildOutputInPackage)">
+        <TargetPath Condition="'%(BuildOutputInPackage.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(BuildOutputInPackage.TargetPath)</TargetPath>
+      </BuildOutputInPackage>
+    </ItemGroup>
+    <ItemGroup Condition="'$(BiglandsEngineGraphicsApi)' != '$(BiglandsEngineDefaultGraphicsApi)'">
+      <SatelliteDllsProjectOutputGroupOutput Update="@(SatelliteDllsProjectOutputGroupOutput)">
+        <TargetPath Condition="'%(SatelliteDllsProjectOutputGroupOutput.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(SatelliteDllsProjectOutputGroupOutput.TargetPath)</TargetPath>
+      </SatelliteDllsProjectOutputGroupOutput>
+      <BuiltProjectOutputGroupOutput Update="@(BuiltProjectOutputGroupOutput)">
+        <TargetPath Condition="'%(BuiltProjectOutputGroupOutput.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(BuiltProjectOutputGroupOutput.TargetPath)</TargetPath>
+      </BuiltProjectOutputGroupOutput>
+      <DocumentationProjectOutputGroupOutput Update="@(DocumentationProjectOutputGroupOutput)">
+        <TargetPath Condition="'%(DocumentationProjectOutputGroupOutput.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(DocumentationProjectOutputGroupOutput.TargetPath)</TargetPath>
+      </DocumentationProjectOutputGroupOutput>
+      <_PathToPriFile Update="@(_PathToPriFile)">
+        <TargetPath Condition="'%(_PathToPriFile.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(_PathToPriFile.TargetPath)</TargetPath>
+      </_PathToPriFile>
+      <BuildOutputInPackage Update="@(BuildOutputInPackage)">
+        <TargetPath Condition="'%(BuildOutputInPackage.TargetPath)' == ''">%(FileName)%(Extension)</TargetPath>
+        <TargetPath>$(BiglandsEngineGraphicsApi)\%(BuildOutputInPackage.TargetPath)</TargetPath>
+      </BuildOutputInPackage>
+    </ItemGroup>
+  </Target>
+
+  <PropertyGroup Condition="'$(BiglandsEngineGraphicsApiDependent)' == 'true'">
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);_BiglandsEnginePackUpdateOutputTargetPath</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <!-- ==================================================================
+       Rewrote _WalkEachTargetPerFramework using @(_InnerBuildProjects)
+  -->
+  <Target Name="_WalkEachTargetPerFramework" DependsOnTargets="_ComputeTargetFrameworkItems">
+    <MSBuild
+      Condition="'$(IncludeBuildOutput)' == 'true'"
+      Projects="@(_InnerBuildProjects)"
+      Targets="_GetBuildOutputFilesWithTfm">
+
+      <Output
+          TaskParameter="TargetOutputs"
+          ItemName="_BuildOutputInPackage" />
+    </MSBuild>
+
+    <MSBuild
+      Condition="'$(TargetsForTfmSpecificContentInPackage)' != ''"
+      Projects="@(_InnerBuildProjects)"
+      Targets="_GetTfmSpecificContentForPackage">
+
+      <Output
+          TaskParameter="TargetOutputs"
+          ItemName="_PackageFiles"/>
+    </MSBuild>
+
+    <MSBuild
+      Condition="'$(IncludeBuildOutput)' == 'true'"
+      Projects="@(_InnerBuildProjects)"
+      Targets="_GetDebugSymbolsWithTfm">
+
+      <Output
+          TaskParameter="TargetOutputs"
+          ItemName="_TargetPathsToSymbols" />
+    </MSBuild>
+
+    <MSBuild
+      Condition="'$(IncludeSource)' == 'true'"
+      Projects="@(_InnerBuildProjects)"
+      Targets="SourceFilesProjectOutputGroup"
+      Properties="BuildProjectReferences=false;">
+
+      <Output
+          TaskParameter="TargetOutputs"
+          ItemName="_SourceFiles" />
+    </MSBuild>
+
+    <MSBuild
+      Projects="@(_InnerBuildProjects)"
+      Targets="_GetFrameworkAssemblyReferences"
+      Properties="BuildProjectReferences=false;">
+
+      <Output
+          TaskParameter="TargetOutputs"
+          ItemName="_FrameworkAssemblyReferences" />
+    </MSBuild>
+
+    <MSBuild
+      Projects="@(_InnerBuildProjects)"
+      Targets="_GetFrameworksWithSuppressedDependencies"
+      Properties="BuildProjectReferences=false;">
+
+      <Output
+          TaskParameter="TargetOutputs"
+          ItemName="_FrameworksWithSuppressedDependencies" />
+    </MSBuild>
+  </Target>
+
+</Project>

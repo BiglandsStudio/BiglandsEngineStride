@@ -1,0 +1,16 @@
+﻿<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Engine\BiglandsEngine.Engine.csproj" />
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Graphics\BiglandsEngine.Graphics.csproj" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>BiglandsEngine.VisualStudio.Package</id>
+    <version>4.2.0</version>
+    <authors>BiglandsEngine</authors>
+    <owners>BiglandsEngine</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>http://BiglandsEngine3d.net/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/BiglandsEngine3d/media/master/images/mainlogo/nuget/logo.png</iconUrl>
+    <repository type="git" url="https://github.com/BiglandsEngine3d/BiglandsEngine" />
+    <copyright>&#169; BiglandsEngine contributors, Silicon Studio Corp. and  the .NET Foundation</copyright>
+    <description>Visual Studio Extension for BiglandsEngine</description>
+    <tags>internal</tags>
+  </metadata>
+  <files>
+    <file src="bin\BiglandsEngine.vsix" target="tools" />
+    <file src="..\BiglandsEngine.VisualStudio.PackageInstall\bin\Release\packageinstall.exe" target="tools" />
+    <file src="..\BiglandsEngine.VisualStudio.PackageInstall\bin\Release\Microsoft.VisualStudio.Setup.Configuration.Interop.dll" target="tools" />
+  </files>
+</package>

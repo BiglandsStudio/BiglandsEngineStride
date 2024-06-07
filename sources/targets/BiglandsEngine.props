@@ -1,0 +1,125 @@
+<!-- Build file pre-included by all BiglandsEngine projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BiglandsEngineSdkTargets>$(MSBuildThisFileDirectory)BiglandsEngine.targets</BiglandsEngineSdkTargets>
+    <BiglandsEngineAssemblyProcessorGlobal>true</BiglandsEngineAssemblyProcessorGlobal>
+    <BiglandsEngineAssemblyProcessorDefaultOptions>--auto-notify-property --parameter-key --auto-module-initializer --serialization</BiglandsEngineAssemblyProcessorDefaultOptions>
+    <BiglandsEngineAssemblyProcessorOptions Condition="'$(BiglandsEngineAssemblyProcessorOptions)' == ''">$(BiglandsEngineAssemblyProcessorDefaultOptions)</BiglandsEngineAssemblyProcessorOptions>
+  </PropertyGroup>
+
+  <!--Import BiglandsEngine settings-->
+  <Import Project="$(MSBuildThisFileDirectory)BiglandsEngine.Core.props"/>
+
+  <!-- Default GraphicsApi -->
+  <PropertyGroup>
+    <!-- When working in a specific API in the BiglandsEngine Runtime or in the BiglandsEngine solution (not in a game or app),
+         you can uncomment this property and set its value to the name of that graphics API so it becomes
+         the active one that Visual Studio and IntelliSense takes into account -->
+    <!--<BiglandsEngineDefaultGraphicsApiDesignTime>Vulkan</BiglandsEngineDefaultGraphicsApiDesignTime>-->
+
+    <BiglandsEngineGraphicsApis Condition="('$(BiglandsEngineGraphicsApis)' == '' Or '$(BiglandsEngineGraphicsApiDependentBuildAll)' == 'true') And ('$(TargetFramework)' == '$(BiglandsEngineFramework)' Or '$(TargetFramework)' == '$(BiglandsEngineFrameworkWindows)')">Direct3D11;Direct3D12;OpenGL;OpenGLES;Vulkan</BiglandsEngineGraphicsApis>
+
+    <BiglandsEngineDefaultGraphicsApi Condition="'$(BiglandsEngineGraphicsApis)' != ''">$(BiglandsEngineGraphicsApis.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</BiglandsEngineDefaultGraphicsApi>
+    <BiglandsEngineDefaultGraphicsApi Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkUWP)'">Direct3D11</BiglandsEngineDefaultGraphicsApi>
+    <BiglandsEngineDefaultGraphicsApi Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkAndroid)'">OpenGLES</BiglandsEngineDefaultGraphicsApi>
+    <BiglandsEngineDefaultGraphicsApi Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkiOS)'">OpenGLES</BiglandsEngineDefaultGraphicsApi>
+  </PropertyGroup>
+  <!-- Some platforms only have a single graphics API.
+      If yes, set it right away and disable BiglandsEngineGraphicsApiDependent (only for inner builds, check using TargetFrameworks) -->
+  <PropertyGroup Condition="'$(BiglandsEngineGraphicsApiDependent)' == 'true' And !('$(TargetFrameworks)' != '' and '$(TargetFramework)' == '')">
+    <BiglandsEngineGraphicsApiDependent Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkUWP)'">false</BiglandsEngineGraphicsApiDependent>
+    <BiglandsEngineGraphicsApiDependent Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkiOS)'">false</BiglandsEngineGraphicsApiDependent>
+    <BiglandsEngineGraphicsApiDependent Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkAndroid)'">false</BiglandsEngineGraphicsApiDependent>
+    <BiglandsEngineGraphicsApi Condition="'$(BiglandsEngineGraphicsApiDependent)' == 'false'">$(BiglandsEngineDefaultGraphicsApi)</BiglandsEngineGraphicsApi>
+  </PropertyGroup>
+  <!-- Setup default GraphicsApi for design-time build (that's the one used for Visual Studio intellisense, so it can be useful to override when working on a specific API) -->
+  <PropertyGroup Condition="'$(DesignTimeBuild)' == 'true' And '$(BiglandsEngineGraphicsApiDependent)' == 'true' And '$(BiglandsEngineGraphicsApi)' == ''">
+    <BiglandsEngineGraphicsApi Condition="'$(BiglandsEngineGraphicsApi)' == ''">$(BiglandsEngineDefaultGraphicsApiDesignTime)</BiglandsEngineGraphicsApi>
+    <BiglandsEngineGraphicsApi Condition="'$(BiglandsEngineGraphicsApi)' == ''">$(BiglandsEngineDefaultGraphicsApi)</BiglandsEngineGraphicsApi>
+  </PropertyGroup>
+
+  <!--
+    Settings BiglandsEngineGraphicsApi specific
+  -->
+  <PropertyGroup Condition=" '$(BiglandsEngineGraphicsApi)' == 'Direct3D11' ">
+    <BiglandsEngineGraphicsApiDefines>BiglandsEngine_GRAPHICS_API_DIRECT3D;BiglandsEngine_GRAPHICS_API_DIRECT3D11</BiglandsEngineGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BiglandsEngineGraphicsApi)' == 'Direct3D12' ">
+    <BiglandsEngineGraphicsApiDefines>BiglandsEngine_GRAPHICS_API_DIRECT3D;BiglandsEngine_GRAPHICS_API_DIRECT3D12</BiglandsEngineGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BiglandsEngineGraphicsApi)' == 'Null' ">
+    <BiglandsEngineGraphicsApiDefines>BiglandsEngine_GRAPHICS_API_NULL</BiglandsEngineGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BiglandsEngineGraphicsApi)' == 'OpenGL' ">
+    <BiglandsEngineGraphicsApiDefines>BiglandsEngine_GRAPHICS_API_OPENGL;BiglandsEngine_GRAPHICS_API_OPENGLCORE</BiglandsEngineGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BiglandsEngineGraphicsApi)' == 'OpenGLES' ">
+    <BiglandsEngineGraphicsApiDefines>BiglandsEngine_GRAPHICS_API_OPENGL;BiglandsEngine_GRAPHICS_API_OPENGLES</BiglandsEngineGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BiglandsEngineGraphicsApi)' == 'Vulkan' ">
+    <BiglandsEngineGraphicsApiDefines>BiglandsEngine_GRAPHICS_API_VULKAN</BiglandsEngineGraphicsApiDefines>
+  </PropertyGroup>
+
+  <!--
+    Settings TargetFramework specific
+  -->
+  <PropertyGroup Condition=" '$(TargetFramework)' == '$(BiglandsEngineFrameworkUWP)' ">
+    <ProjectLockFile Condition="'$(ProjectLockFile)' == ''">$(MSBuildThisFileDirectory)..\build\project.lock.json</ProjectLockFile>
+  </PropertyGroup>
+
+  <!--
+    Global Defines
+  -->
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);$(BiglandsEngineGraphicsApiDefines)</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BiglandsEngineUI Condition="'$(TargetFramework)' != '$(BiglandsEngineFrameworkUWP)'">SDL</BiglandsEngineUI>
+    <BiglandsEngineUI Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkWindows)' AND ('$(BiglandsEngineGraphicsApi)' == 'Direct3D11' Or '$(BiglandsEngineGraphicsApi)' == 'Direct3D12')">$(BiglandsEngineUI);WINFORMS;WPF</BiglandsEngineUI>
+
+    <DefineConstants Condition="$(BiglandsEngineUI.Contains('SDL'))">$(DefineConstants);BiglandsEngine_UI_SDL</DefineConstants>
+    <DefineConstants Condition="$(BiglandsEngineUI.Contains('WINFORMS'))">$(DefineConstants);BiglandsEngine_UI_WINFORMS</DefineConstants>
+    <DefineConstants Condition="$(BiglandsEngineUI.Contains('WPF'))">$(DefineConstants);BiglandsEngine_UI_WPF</DefineConstants>
+  </PropertyGroup>
+  <!-- Build the BiglandsEngineUIList using the value of BiglandsEngineUI -->
+  <ItemGroup Condition="'$(BiglandsEngineUIList)' == ''">
+    <BiglandsEngineUIList Condition="'$(BiglandsEngineUI)' != ''" Include="$(BiglandsEngineUI)" />
+    <BiglandsEngineUIList Condition="'$(BiglandsEngineUI)' == ''" Include="None" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ExecutableExtension Condition="$([MSBuild]::IsOSPlatform('Windows'))">.exe</ExecutableExtension>
+  </PropertyGroup>
+
+  <!-- Pack target -->
+  <!--<UsingTask TaskName="BiglandsEngine.Core.Tasks.PackAssets" AssemblyFile="$(MSBuildThisFileDirectory)..\core\BiglandsEngine.Core.Tasks\bin\$(Configuration)\$(BiglandsEngineEditorTargetFramework)\BiglandsEngine.Core.Tasks.exe" />-->
+  <Target Name="PrepareBiglandsEngineAssetsForPack" BeforeTargets="_GetPackageFiles" Condition="'$(BiglandsEnginePackAssets)' == 'true'">
+    <!-- We use exec version rather than task version, otherwise file will be locked during rebuild -->
+    <!--<PackAssets ProjectFile="$(MSBuildProjectFile)" IntermediatePackagePath="$(IntermediateOutputPath)\BiglandsEngine">
+      <Output TaskParameter="GeneratedItems" ItemName="None"/>
+    </PackAssets>-->
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)..\core\BiglandsEngine.Core.Tasks\bin\$(Configuration)\$(BiglandsEngineXplatEditorTargetFramework)\BiglandsEngine.Core.Tasks$(ExecutableExtension)&quot; pack-assets &quot;$(MSBuildProjectFile)&quot; &quot;$(IntermediateOutputPath)\BiglandsEngine&quot;" ConsoleToMsBuild="true">
+      <Output TaskParameter="ConsoleOutput" ItemName="PackAssetsLine" />
+    </Exec>
+    <ItemGroup>
+      <PackAssetsLine Update="@(PackAssetsLine)">
+        <SourcePath>$([System.String]::new('%(Identity)').Split('|')[0])</SourcePath>
+        <PackagePath>$([System.String]::new('%(Identity)').Split('|')[1])</PackagePath>
+      </PackAssetsLine>
+      <None Include="%(PackAssetsLine.SourcePath)">
+        <Pack>true</Pack>
+        <PackagePath>%(PackAssetsLine.PackagePath)</PackagePath>
+      </None>
+    </ItemGroup>
+  </Target>
+
+</Project>

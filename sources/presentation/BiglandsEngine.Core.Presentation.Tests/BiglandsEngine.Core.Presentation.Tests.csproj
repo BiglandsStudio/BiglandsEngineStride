@@ -1,0 +1,26 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.UnitTests.props" />
+  <PropertyGroup>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tests\xunit.runner.BiglandsEngine\xunit.runner.BiglandsEngine.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.Core.Presentation.Wpf\BiglandsEngine.Core.Presentation.Wpf.csproj" />
+  </ItemGroup>
+  <Import Project="..\..\targets\BiglandsEngine.UnitTests.targets" />
+</Project>

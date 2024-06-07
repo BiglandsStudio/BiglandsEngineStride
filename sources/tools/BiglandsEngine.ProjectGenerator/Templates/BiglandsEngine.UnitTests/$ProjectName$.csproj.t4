@@ -1,0 +1,94 @@
+<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<#
+var curPlatform = (BiglandsEngine.Core.PlatformType)System.Enum.Parse(typeof(BiglandsEngine.Core.PlatformType), Properties.CurrentPlatform);
+var needSigning = true;
+#>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="<#= Properties.BiglandsEngineSdkRelativeDir #>\sources\targets\BiglandsEngine.UnitTests.props" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{<#= ProjectGuid.ToString().ToUpperInvariant() #>}</ProjectGuid>
+<# if (curPlatform == BiglandsEngine.Core.PlatformType.Android) { #>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <AndroidUseLatestPlatformSdk></AndroidUseLatestPlatformSdk>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <JavaMaximumHeapSize />
+    <JavaOptions />
+    <AssemblyName><#= ProjectName #></AssemblyName>
+<# } else if (curPlatform == BiglandsEngine.Core.PlatformType.iOS) { #>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName><#= ProjectName.Replace(".", "") #></AssemblyName>
+<# } else { #>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <BiglandsEngineBuildTags>*</BiglandsEngineBuildTags>
+    <AssemblyName><#= ProjectName #></AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+<# } #>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace><#= Properties.Namespace #></RootNamespace>
+    <BiglandsEngineBuildTags>*</BiglandsEngineBuildTags>
+    <BiglandsEnginePlatform><#= curPlatform #></BiglandsEnginePlatform>
+    <BiglandsEngineBuildProfile>$(BiglandsEnginePlatform)</BiglandsEngineBuildProfile>
+    <BiglandsEngineGraphicsApi Condition="'$(BiglandsEngineGraphicsApi)' == ''"><#= curPlatform.GetDefaultGraphicsPlatform() #></BiglandsEngineGraphicsApi>
+    <BiglandsEngineOutputFolder>Tests\$(BiglandsEngineGraphicsApi)\$(AssemblyName)</BiglandsEngineOutputFolder>
+    <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+<#@ include file="..\Common.PropertyGroups.targets.t4" #>
+  <ItemGroup>
+    <None Include="README.md" />
+    <Compile Include="TestClass1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+<# if (curPlatform == BiglandsEngine.Core.PlatformType.Android) { #>
+  <ItemGroup>
+    <Reference Label="BiglandsEngine.DoNotSync" Include="Mono.Android" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Label="BiglandsEngine.DoNotSync" Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Label="BiglandsEngine.DoNotSync" Include="Resources\Drawable\Icon.png" />
+    <Compile Label="BiglandsEngine.DoNotSync" Include="Resources\Resource.Designer.cs" />
+    <Compile Label="BiglandsEngine.DoNotSync" Include="<#= Properties.BiglandsEngineSdkRelativeDir #>\sources\shared\tests\nunitlite\NUnitLiteLauncher.Android.cs">
+      <Link>NUnitLiteLauncher.Android.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+<# } else if (curPlatform == BiglandsEngine.Core.PlatformType.iOS) { #>
+  <ItemGroup>
+    <Reference Label="BiglandsEngine.DoNotSync" Include="Xamarin.iOS" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Label="BiglandsEngine.DoNotSync" Include="Info.plist" />
+    <Compile Label="BiglandsEngine.DoNotSync" Include="<#= Properties.BiglandsEngineSdkRelativeDir #>\sources\shared\tests\nunitlite\NUnitLiteLauncher.iPhone.cs">
+      <Link>NUnitLiteLauncher.iPhone.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+<# } else { #>
+  <Import Condition="'$(BiglandsEngineNETRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+<# } #>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+    Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
+

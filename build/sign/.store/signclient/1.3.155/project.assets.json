@@ -109,7 +109,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\dev\\stride\\build\\sign\\.store\\.stage\\5zdy4aug.kc2": {}
+    "C:\\dev\\BiglandsEngine\\build\\sign\\.store\\.stage\\5zdy4aug.kc2": {}
   },
   "project": {
     "version": "1.0.0",
@@ -117,11 +117,11 @@
       "projectUniqueName": "C:\\Users\\xen\\AppData\\Local\\Temp\\a51201f1-789d-4773-8ad7-bc52ff4d6172\\restore.csproj",
       "projectName": "restore",
       "projectPath": "C:\\Users\\xen\\AppData\\Local\\Temp\\a51201f1-789d-4773-8ad7-bc52ff4d6172\\restore.csproj",
-      "packagesPath": "C:\\dev\\stride\\build\\sign\\.store\\.stage\\5zdy4aug.kc2",
-      "outputPath": "C:\\dev\\stride\\build\\sign\\.store\\.stage\\5zdy4aug.kc2\\",
+      "packagesPath": "C:\\dev\\BiglandsEngine\\build\\sign\\.store\\.stage\\5zdy4aug.kc2",
+      "outputPath": "C:\\dev\\BiglandsEngine\\build\\sign\\.store\\.stage\\5zdy4aug.kc2\\",
       "projectStyle": "DotnetToolReference",
       "configFilePaths": [
-        "C:\\dev\\stride\\NuGet.Config",
+        "C:\\dev\\BiglandsEngine\\NuGet.Config",
         "C:\\Users\\xen\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
@@ -134,9 +134,9 @@
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\dotnet\\library-packs": {},
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {},
-        "C:\\Users\\xen\\AppData\\Local\\Stride\\NugetDev": {},
+        "C:\\Users\\xen\\AppData\\Local\\BiglandsEngine\\NugetDev": {},
         "https://api.nuget.org/v3/index.json": {},
-        "https://packages.stride3d.net/nuget": {},
+        "https://packages.BiglandsEngine3d.net/nuget": {},
         "https://pkgs.dev.azure.com/clairernovotny/GitBuilds/_packaging/MSBuildSdkExtras@Local/nuget/v3/index.json": {}
       },
       "frameworks": {

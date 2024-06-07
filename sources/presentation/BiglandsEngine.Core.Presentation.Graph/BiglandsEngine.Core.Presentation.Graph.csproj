@@ -1,0 +1,31 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.Core.props" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <BiglandsEngineAssemblyProcessorOptions>--auto-module-initializer --serialization</BiglandsEngineAssemblyProcessorOptions>
+    <RestorePackages>true</RestorePackages>
+    <UseWPF>true</UseWPF>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BiglandsEngine.GraphX.WPF.Controls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>  
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
+    <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BiglandsEngine.Core.Presentation.Wpf\BiglandsEngine.Core.Presentation.Wpf.csproj" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

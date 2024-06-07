@@ -1,0 +1,9 @@
+<!-- Build file pre-included by all BiglandsEngine projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <BiglandsEngineEditorTargetFramework>net8.0-windows7.0</BiglandsEngineEditorTargetFramework>
+    <BiglandsEngineXplatEditorTargetFramework>net8.0</BiglandsEngineXplatEditorTargetFramework>
+  </PropertyGroup>
+
+</Project>

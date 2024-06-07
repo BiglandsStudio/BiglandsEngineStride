@@ -1,0 +1,25 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <BiglandsEngineAssemblyProcessorOptions>$(BiglandsEngineAssemblyProcessorDefaultOptions)</BiglandsEngineAssemblyProcessorOptions>
+    <TargetFramework>$(BiglandsEngineXplatEditorTargetFramework)</TargetFramework>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Analysis\" />
+    <Folder Include="Material\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Silk.NET.Assimp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BiglandsEngine.Importer.Common\BiglandsEngine.Importer.Common.csproj" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

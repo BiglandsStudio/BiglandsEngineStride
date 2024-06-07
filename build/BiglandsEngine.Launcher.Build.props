@@ -1,0 +1,11 @@
+<!-- Build file pre-included by all BiglandsEngine projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BiglandsEngineCommonPreSettingsName>BiglandsEngine</BiglandsEngineCommonPreSettingsName>
+    
+    <!-- Defines the platform used by BiglandsEngine - Values are Windows/Android/iOS...etc. -->
+    <BiglandsEnginePlatform Condition=" '$(BiglandsEnginePlatform)' == '' ">Windows</BiglandsEnginePlatform>
+
+    <BiglandsEngineEditorTargetFrameworks>net8.0-windows7.0</BiglandsEngineEditorTargetFrameworks>
+  </PropertyGroup>
+</Project>

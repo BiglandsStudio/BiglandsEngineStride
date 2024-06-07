@@ -1,0 +1,22 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <BiglandsEngineAssemblyProcessorOptions>$(BiglandsEngineAssemblyProcessorDefaultOptions)</BiglandsEngineAssemblyProcessorOptions>
+    <TargetFramework>$(BiglandsEngineXplatEditorTargetFramework)</TargetFramework>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Analysis\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Assets\BiglandsEngine.Assets.csproj" />
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Engine\BiglandsEngine.Engine.csproj" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

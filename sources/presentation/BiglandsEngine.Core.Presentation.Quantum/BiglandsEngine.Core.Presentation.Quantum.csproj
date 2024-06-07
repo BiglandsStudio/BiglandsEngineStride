@@ -1,0 +1,20 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.Core.props" />
+ 
+  <PropertyGroup>
+    <TargetFramework>$(BiglandsEngineXplatEditorTargetFramework)</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BiglandsEngine.Core.Presentation\BiglandsEngine.Core.Presentation.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.Core.Quantum\BiglandsEngine.Core.Quantum.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

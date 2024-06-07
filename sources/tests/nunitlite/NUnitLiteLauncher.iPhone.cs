@@ -28,7 +28,7 @@ using Foundation;
 using UIKit;
 using MonoTouch.NUnit.UI;
 
-namespace Stride.Core.Tests
+namespace BiglandsEngine.Core.Tests
 {
     public class Application
     {

@@ -34,16 +34,16 @@ using Android.OS;
 using Java.IO;
 using NUnit.Framework.Api;
 using NUnit.Framework.Internal;
-using Stride.Core;
-using Stride.Core.Diagnostics;
-using Stride.Engine.Network;
-using Stride.Graphics.Regression;
+using BiglandsEngine.Core;
+using BiglandsEngine.Core.Diagnostics;
+using BiglandsEngine.Engine.Network;
+using BiglandsEngine.Graphics.Regression;
 
 using Console = System.Console;
 using File = System.IO.File;
 using StringWriter = System.IO.StringWriter;
-using TextUI = Stride.Graphics.Regression.TextUI;
-using Stride;
+using TextUI = BiglandsEngine.Graphics.Regression.TextUI;
+using BiglandsEngine;
 using static System.Int32;
 
 namespace NUnitLite.Tests
@@ -106,14 +106,14 @@ namespace NUnitLite.Tests
             if (PlatformAndroid.Context == null)
                 PlatformAndroid.Context = this;
 
-            var strideVersion = Intent.GetStringExtra(TestRunner.StrideVersion);
-            if (strideVersion == null)
+            var BiglandsEngineVersion = Intent.GetStringExtra(TestRunner.BiglandsEngineVersion);
+            if (BiglandsEngineVersion == null)
             {
                 // Connect to image server in the background
                 Task.Run(() => ConnectToImageServer());
 
                 // No explicit intent, switch to UI activity
-                StartActivity(typeof(StrideTestSuiteActivity));
+                StartActivity(typeof(BiglandsEngineTestSuiteActivity));
                 return;
             }
 
@@ -126,7 +126,7 @@ namespace NUnitLite.Tests
             // Connect during startup, so that first test timing is not affected by initial connection
             try
             {
-                var imageServerSocket = RouterClient.RequestServer($"/redirect/{ImageTester.StrideImageServerHost}/{ImageTester.StrideImageServerPort}").Result;
+                var imageServerSocket = RouterClient.RequestServer($"/redirect/{ImageTester.BiglandsEngineImageServerHost}/{ImageTester.BiglandsEngineImageServerPort}").Result;
                 ImageTester.Connect(imageServerSocket);
             }
             catch (Exception e)
@@ -149,14 +149,14 @@ namespace NUnitLite.Tests
                 }
             };
 
-            var strideVersion = Intent.GetStringExtra(TestRunner.StrideVersion);
-            var buildNumber = Parse(Intent.GetStringExtra(TestRunner.StrideBuildNumber) ?? "-1");
-            var branchName = Intent.GetStringExtra(TestRunner.StrideBranchName) ?? "";
+            var BiglandsEngineVersion = Intent.GetStringExtra(TestRunner.BiglandsEngineVersion);
+            var buildNumber = Parse(Intent.GetStringExtra(TestRunner.BiglandsEngineBuildNumber) ?? "-1");
+            var branchName = Intent.GetStringExtra(TestRunner.BiglandsEngineBranchName) ?? "";
 
             // Remove extra (if activity is recreated)
-            Intent.RemoveExtra(TestRunner.StrideVersion);
-            Intent.RemoveExtra(TestRunner.StrideBuildNumber);
-            Intent.RemoveExtra(TestRunner.StrideBranchName);
+            Intent.RemoveExtra(TestRunner.BiglandsEngineVersion);
+            Intent.RemoveExtra(TestRunner.BiglandsEngineBuildNumber);
+            Intent.RemoveExtra(TestRunner.BiglandsEngineBranchName);
 
             Logger.Info(@"*******************************************************************************************************************************");
             Logger.Info(@"date: " + DateTime.Now);
@@ -165,7 +165,7 @@ namespace NUnitLite.Tests
             // Connect to server right away to let it know we're alive
             //var client = Connect(serverAddresses, serverPort);
 
-            var url = "/task/Stride.TestRunner.exe";
+            var url = "/task/BiglandsEngine.TestRunner.exe";
 
             socketContext = RouterClient.RequestServer(url).Result;
             socketBinaryWriter = new BinaryWriter(socketContext.WriteStream);
@@ -269,7 +269,7 @@ namespace NUnitLite.Tests
     }
 
     [Activity]
-    public class StrideTestSuiteActivity : RunnerActivity
+    public class BiglandsEngineTestSuiteActivity : RunnerActivity
     {
         protected override void OnCreate(Bundle bundle)
         {

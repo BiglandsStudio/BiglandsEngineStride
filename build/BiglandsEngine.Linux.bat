@@ -1,0 +1,2 @@
+set BiglandsEnginePlatforms=Windows;Linux
+BiglandsEngine.sln

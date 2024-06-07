@@ -10,13 +10,13 @@
     <ROW Property="AI_PACKAGING_TOOL" Value="Advanced Installer 19.4 build 4648ec91" ValueLocId="-"/>
     <ROW Property="ALLUSERS" Value="1" MultiBuildValue="DefaultBuild:"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
-    <ROW Property="ARPCONTACT" Value="contact@stride3d.net"/>
+    <ROW Property="ARPCONTACT" Value="contact@BiglandsEngine3d.net"/>
     <ROW Property="ARPNOREPAIR" MultiBuildValue="DefaultBuild:1"/>
-    <ROW Property="ARPURLINFOABOUT" Value="http://stride3d.net"/>
-    <ROW Property="Manufacturer" Value="Stride"/>
+    <ROW Property="ARPURLINFOABOUT" Value="http://BiglandsEngine3d.net"/>
+    <ROW Property="Manufacturer" Value="BiglandsEngine"/>
     <ROW Property="ProductCode" Value="2057:{12696D67-B2C7-4A9A-A117-0807F79D37E0} " Type="16"/>
     <ROW Property="ProductLanguage" Value="2057"/>
-    <ROW Property="ProductName" Value="Stride Launcher Prerequisites"/>
+    <ROW Property="ProductName" Value="BiglandsEngine Launcher Prerequisites"/>
     <ROW Property="ProductVersion" Value="1.0.0"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{78A7BD50-E735-4C31-AF8B-E81F2A65B8EE}"/>
@@ -54,7 +54,7 @@
     <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DigCertStoreComponent">
-    <ROW TimeStampUrl="http://timestamp.digicert.com" SignerDescription="[|ProductName]" SignOptions="7" SignTool="0" Thumbprint="6f474206bcbb391bb82ba9e5dc0302def37aebbe Subject: Oracle Corporation&#10;Issuer: DigiCert Assured ID Code Signing CA-1&#10;Valid from 03/19/2019 to 03/23/2022&#10;User\TrustedPublisher" CustomToolPath="..\..\..\build\sign\SignClient.exe" CustomToolCmdLine="sign -c &quot;sign\appsettings.json&quot; --name &quot;Stride&quot; --user &quot;%StrideSignUser%&quot; --secret &quot;%StrideSignSecret%&quot; --input &quot;..\sources\launcher\Prerequisites\launcher-prerequisites.*&quot;"/>
+    <ROW TimeStampUrl="http://timestamp.digicert.com" SignerDescription="[|ProductName]" SignOptions="7" SignTool="0" Thumbprint="6f474206bcbb391bb82ba9e5dc0302def37aebbe Subject: Oracle Corporation&#10;Issuer: DigiCert Assured ID Code Signing CA-1&#10;Valid from 03/19/2019 to 03/23/2022&#10;User\TrustedPublisher" CustomToolPath="..\..\..\build\sign\SignClient.exe" CustomToolCmdLine="sign -c &quot;sign\appsettings.json&quot; --name &quot;BiglandsEngine&quot; --user &quot;%BiglandsEngineSignUser%&quot; --secret &quot;%BiglandsEngineSignSecret%&quot; --input &quot;..\sources\launcher\Prerequisites\launcher-prerequisites.*&quot;"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
     <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>

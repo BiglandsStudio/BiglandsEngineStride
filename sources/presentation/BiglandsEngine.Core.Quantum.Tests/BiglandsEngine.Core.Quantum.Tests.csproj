@@ -1,0 +1,28 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.UnitTests.props" />
+  <PropertyGroup>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <BiglandsEngineAssemblyProcessorOptions>--auto-module-initializer --serialization</BiglandsEngineAssemblyProcessorOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Remove="obsolete\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\tests\xunit.runner.BiglandsEngine\xunit.runner.BiglandsEngine.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.Core.Quantum\BiglandsEngine.Core.Quantum.csproj" />
+  </ItemGroup>
+  <Import Project="..\..\targets\BiglandsEngine.UnitTests.targets" />
+</Project>

@@ -26,9 +26,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Foundation;
 using UIKit;
-using Stride.UnitTesting.UI;
+using BiglandsEngine.UnitTesting.UI;
 
-namespace Stride.Core.Tests
+namespace BiglandsEngine.Core.Tests
 {
     public class Application
     {

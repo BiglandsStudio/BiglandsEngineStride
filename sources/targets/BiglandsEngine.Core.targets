@@ -1,0 +1,223 @@
+<!-- Build file post-included by all BiglandsEngine projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Add Default targets used by Msbuild for undefined Platforms / or when skipping compilation under a platform -->
+  <Target Name="Build"/>
+  <Target Name="Clean"/>
+  <Target Name="ReBuild"/>
+  <Target Name="Publish"/>
+  <Target Name="GetTargetPath"/>
+  <Target Name="GetNativeManifest"/>
+  <Target Name="GetPackagingOutputs"/>
+
+  <!-- OS Compatibility Properties -->
+  <PropertyGroup>
+    <TEMP>$([System.IO.Path]::GetTempPath())</TEMP>
+    <DependencyDir>$(MSBuildThisFileDirectory)../../deps</DependencyDir>
+    <BuildDir>$(MSBuildThisFileDirectory)../../build/</BuildDir>
+    <SourceDir>$(MSBuildThisFileDirectory)../../sources</SourceDir>
+  </PropertyGroup>
+
+  <!--Import Local Post Settings for the solution being loaded -->
+  <Import Project="$(BuildDir)/$(SolutionName).Build.targets" Condition="Exists('$(BuildDir)/$(SolutionName).Build.targets')" />
+  <Import Project="$(BuildDir)/BiglandsEngine.Core.Build.targets" Condition="Exists('$(BuildDir)/BiglandsEngine.Core.Build.targets')" />
+
+  <!-- Workaround: GetPackagingOutputs from UWP (uap) try to build ProjectReference with current TFM, and that's the only way I could find to skip it -->
+  <Target Name="_BiglandsEngineRemoveTargetFrameworkBeforeGetPackagingOutputs" BeforeTargets="GetPackagingOutputs">
+    <ItemGroup>
+      <ProjectReferenceWithConfiguration>
+        <UndefineProperties>%(ProjectReferenceWithConfiguration.UndefineProperties);TargetFramework</UndefineProperties>
+      </ProjectReferenceWithConfiguration>
+    </ItemGroup>
+  </Target>
+
+  <!-- Code Analysis -->
+  <PropertyGroup Condition="'$(BiglandsEngineCodeAnalysis)' == 'true'">
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)BiglandsEngine.ruleset</CodeAnalysisRuleSet>
+    <!--<TreatWarningsAsErrors>true</TreatWarningsAsErrors>-->
+  </PropertyGroup>
+
+  <!-- docfx doesn't like if there is no TargetFramework set by default -->
+  <PropertyGroup Condition="'$(BiglandsEngineBuildDoc)' == 'true'">
+    <TargetFramework Condition="'$(TargetFramework)' == ''">$(TargetFrameworks.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</TargetFramework>
+  </PropertyGroup>  
+
+  <!-- Setup compiler targets per platform / language -->
+  <PropertyGroup>
+    <!-- On Android, everything is library (even Exe) -->
+    <OutputType Condition=" '$(TargetFramework)' == '$(BiglandsEngineFrameworkAndroid)' ">Library</OutputType>
+  </PropertyGroup>
+
+  <!-- User Documentation (.usrdoc) -->
+  <PropertyGroup Condition="'$(BiglandsEnginePublicApi)' == 'true'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.usrdoc</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);_BiglandsEngineRegisterUserDocOutputs</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  <Target Name="_BiglandsEngineRegisterUserDocOutputs">
+    <ItemGroup Condition="Exists('$(OutputPath)$(AssemblyName).usrdoc')">
+      <BuildOutputInPackage Include="$(OutputPath)$(AssemblyName).usrdoc"/>
+    </ItemGroup>
+  </Target>
+  <Target Name="_BiglandsEngineRegisterUserDocReferenceRelatedFileExtensions" Condition="'$(BiglandsEnginePublicApi)' == 'true'" BeforeTargets="ResolveAssemblyReferences">
+    <PropertyGroup>
+      <AllowedReferenceRelatedFileExtensions>$(AllowedReferenceRelatedFileExtensions);.usrdoc</AllowedReferenceRelatedFileExtensions>
+    </PropertyGroup>
+  </Target>
+
+  <PropertyGroup>
+    <BiglandsEngineCompilerTargetsEnable Condition=" '$(TargetFramework)' != '$(BiglandsEngineFramework)' and '$(TargetFramework)' == '$(BiglandsEngineFrameworkWindows)' and $(BiglandsEngineWindowsOnly) == 'true'">false</BiglandsEngineCompilerTargetsEnable>
+
+    <!-- Skip unit tests if requested -->
+    <BiglandsEngineCompilerTargetsEnable Condition="'$(BiglandsEngineSkipUnitTests)' == 'true' And $(BiglandsEngineOutputFolder.StartsWith('Tests'))">false</BiglandsEngineCompilerTargetsEnable>
+
+    <!-- If BiglandsEngineCompilerTargetsEnable is set to false, override LanguageTargets to an empty one -->
+    <LanguageTargets Condition="'$(BiglandsEngineCompilerTargetsEnable)' == 'false'">$(MSBuildThisFileDirectory)BiglandsEngine.Core.DisableBuild.targets</LanguageTargets>
+
+    <BiglandsEngineAssemblyProcessorFramework>netstandard2.0</BiglandsEngineAssemblyProcessorFramework>
+    <BiglandsEngineAssemblyProcessorExt>.dll</BiglandsEngineAssemblyProcessorExt>
+    <BiglandsEngineAssemblyProcessorHash Condition="'$(BiglandsEngineAssemblyProcessorBasePath)' != ''">$([System.IO.File]::ReadAllText('$(BiglandsEngineAssemblyProcessorBasePath)\$(BiglandsEngineAssemblyProcessorFramework)\BiglandsEngine.Core.AssemblyProcessor$(BiglandsEngineAssemblyProcessorExt).hash'))</BiglandsEngineAssemblyProcessorHash>
+    <BiglandsEngineAssemblyProcessorTempBasePath Condition="'$(BiglandsEngineAssemblyProcessorBasePath)' != ''">$(TEMP)\BiglandsEngine\AssemblyProcessor\$(BiglandsEngineAssemblyProcessorHash)\$(BiglandsEngineAssemblyProcessorFramework)\</BiglandsEngineAssemblyProcessorTempBasePath>
+    <BiglandsEngineAssemblyProcessorTempPath Condition="'$(BiglandsEngineAssemblyProcessorBasePath)' != ''">$(BiglandsEngineAssemblyProcessorTempBasePath)BiglandsEngine.Core.AssemblyProcessor$(BiglandsEngineAssemblyProcessorExt)</BiglandsEngineAssemblyProcessorTempPath>
+  </PropertyGroup>
+
+  <!-- Setup default output path for C++ projects -->
+  <PropertyGroup>
+    <OutputPath Condition="'$(BiglandsEngineProjectType)' == 'Cpp'">$(OutDir)</OutputPath>
+    <IntermediateOutputPath Condition="'$(BiglandsEngineProjectType)' == 'Cpp'">$(IntDir)</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <!-- C++ doesn't auto-import language targets -->
+  <Import Condition="'$(BiglandsEngineProjectType)' == 'Cpp' And '$(BiglandsEngineCompilerTargetsEnable)' != 'false'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+
+  <!-- Assembly Processor -->
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(BiglandsEngineAssemblyProcessorTempPath)" Condition=" '$(BiglandsEngineAssemblyProcessorTempPath)' != '' And '$(BiglandsEngineAssemblyProcessorDev)' != 'true' "/>
+  <Target Name="RunBiglandsEngineAssemblyProcessor" BeforeTargets="CopyFilesToOutputDirectory" Condition=" '$(BiglandsEngineAssemblyProcessor)' == 'true' and '$(BiglandsEngineAssemblyProcessorTempPath)' != '' and '$(BiglandsEngineAssemblyProcessorGlobal)' == 'true' and '$(BiglandsEngineAssemblyProcessorOptions)' != '' ">
+    <PropertyGroup>
+      <!-- Add BiglandsEngine.Core path to assembly search directory -->
+      <BiglandsEngineAssemblyProcessorOptions Condition="'$(BiglandsEngineCoreAssemblyPath)' != ''">$(BiglandsEngineAssemblyProcessorOptions) --assembly="$(BiglandsEngineCoreAssemblyPath)"</BiglandsEngineAssemblyProcessorOptions>
+    </PropertyGroup>
+
+    <WriteLinesToFile File="$(IntermediateOutputPath)BiglandsEngineReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
+
+    <!--Add platform and target framework to assembly processor options-->
+    <PropertyGroup>
+      <BiglandsEngineAssemblyProcessorOptions>--platform=$(BiglandsEnginePlatform) --targetFramework=$(TargetFrameworkVersion) $(BiglandsEngineAssemblyProcessorOptions)</BiglandsEngineAssemblyProcessorOptions>
+      <BiglandsEngineAssemblyProcessorOptions>$(BiglandsEngineAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)BiglandsEngineReferences.cache"</BiglandsEngineAssemblyProcessorOptions>
+      <BiglandsEngineAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(BiglandsEngineAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)"</BiglandsEngineAssemblyProcessorOptions>
+      <BiglandsEngineAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(BiglandsEngineAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</BiglandsEngineAssemblyProcessorOptions>
+      <BiglandsEngineAssemblyProcessorOptions>$(BiglandsEngineAssemblyProcessorOptions) --Werror</BiglandsEngineAssemblyProcessorOptions>
+      <BiglandsEngineAssemblyProcessorOptions>$(BiglandsEngineAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</BiglandsEngineAssemblyProcessorOptions>
+    </PropertyGroup>
+
+    <!-- Copy task to temp directory (otherwise MSBuild lock the task file and we can't reinstall package in dev mode) -->
+    <ItemGroup>
+      <BiglandsEngineAssemblyProcessorFilesToCopy Include="$(BiglandsEngineAssemblyProcessorBasePath)$(BiglandsEngineAssemblyProcessorFramework)\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BiglandsEngineAssemblyProcessorFilesToCopy)" DestinationFolder="$(BiglandsEngineAssemblyProcessorTempBasePath)" Condition="!Exists('$(BiglandsEngineAssemblyProcessorTempPath)')" />
+
+    <!-- Run assembly processor -->
+    <Message Importance="High" Text="&quot;$(BiglandsEngineAssemblyProcessorTempPath)&quot; $(BiglandsEngineAssemblyProcessorOptions)"/>
+    <AssemblyProcessorTask Condition=" '$(BiglandsEngineAssemblyProcessorDev)' != 'true' " Arguments="$(BiglandsEngineAssemblyProcessorOptions)"/>
+    <!-- Dev mode: don't use task to avoid locking the file -->
+    <Exec Condition=" '$(BiglandsEngineAssemblyProcessorDev)' == 'true' " Command="&quot;$(BiglandsEngineAssemblyProcessorTempPath)&quot; $(BiglandsEngineAssemblyProcessorOptions)"/>
+
+    <!-- Copy User Documentation (.usrdoc) file to output -->
+    <Copy
+      Condition="'$(BiglandsEnginePublicApi)' == 'true' And Exists('%(RelativeDir)%(Filename).usrdoc')"
+      SourceFiles="@(DocFileItem->'%(RelativeDir)%(Filename).usrdoc')"
+      DestinationFolder="$(OutDir)"
+      SkipUnchangedFiles="$(SkipCopyUnchangedFiles)"
+      OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
+      Retries="$(CopyRetryCount)"
+      RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
+      UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
+      UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
+    >
+      <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+    </Copy>
+  </Target>
+
+  <Import Project="$(MSBuildThisFileDirectory)BiglandsEngine.Core.PostSettings.Dependencies.targets"/>
+  <Import Condition="'$(BiglandsEngineNativeOutputName)' != ''" Project="$(MSBuildThisFileDirectory)..\native\BiglandsEngine.Native.targets" />
+
+  <!-- Workaround for https://github.com/dotnet/project-system/issues/6227 (UpToDateCheck: always fail if projects.assets.json is updated) -->
+  <Target Name="_GenerateCompileInputsProjectAssets" AfterTargets="_GenerateCompileInputs">
+    <ItemGroup>
+      <CustomAdditionalCompileInputs Include="$(ProjectAssetsFile)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Auto NuGet build packages and deploy them -->
+  <Target Name="BiglandsEngineAutoPackDeploy" AfterTargets="Pack">
+    <Copy Condition="'%(Extension)' == '.nupkg'" SourceFiles="@(NuGetPackOutput)" DestinationFolder="$(LocalAppData)\BiglandsEngine\NugetDev"/>
+    <!-- Deleting .sha512 file and/or .nupkg.metadata seems to be enough for NuGet restore to force extract new package and properly compile dependent projects -->
+    <Delete Files="$(NuGetPackageRoot)\$(PackageId.ToLowerInvariant())\$(PackageVersion)\$(PackageId).$(PackageVersion).nupkg.sha512"/>
+    <Delete Files="$(NuGetPackageRoot)\$(PackageId.ToLowerInvariant())\$(PackageVersion)\.nupkg.metadata"/>
+  </Target>
+  <PropertyGroup Condition="$(DesignTimeBuild) != 'true' And '$(BiglandsEngineSkipAutoPack)' != 'true'">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>.so;.a;.bin;.dylib;$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <!-- Auto NuGet build packages and deploy them -->
+  <Import Project="$(MSBuildThisFileDirectory)BiglandsEngine.AutoPack.targets"/>
+
+  <!-- Generate localization satellite assemblies -->
+  <PropertyGroup>
+    <!-- Unless explicitly requested, only build them for packages to save dev time -->
+    <BiglandsEngineBuildLocalization Condition="'$(BiglandsEngineBuildLocalization)' == '' And '$(BiglandsEnginePackageBuild)' == 'true'">true</BiglandsEngineBuildLocalization>
+  </PropertyGroup>
+  <Target Name="BiglandsEngineGenerateLocalizationSatelliteDlls"
+          BeforeTargets="SatelliteDllsProjectOutputGroup"
+          AfterTargets="Build"
+          Returns="@(SatelliteDllsProjectOutputGroupOutput)"
+          Condition="'$(BiglandsEngineLocalized)' == 'true' And '$(BiglandsEngineBuildLocalization)' == 'true'">
+
+    <ItemGroup>
+      <!-- Current list of languages to try to generate -->
+      <BiglandsEngineTranslations Include="fr;ja;es;de;ru;it;ko"/>
+      <BiglandsEngineTranslations Include="zh-Hans">
+        <Source>zh_HANS-CN</Source>
+      </BiglandsEngineTranslations>
+
+      <_BiglandsEngineTranslations Include="@(BiglandsEngineTranslations)">
+        <Source Condition="%(BiglandsEngineTranslations.Source) == ''">%(BiglandsEngineTranslations.Identity)</Source>
+      </_BiglandsEngineTranslations>
+    </ItemGroup>
+    <Message Importance="High" Text="Generating translation for %(_BiglandsEngineTranslations.Identity) %(_BiglandsEngineTranslations.SourceFolder)"/>
+
+    <Exec Condition="Exists('$(SourceDir)\localization\%(_BiglandsEngineTranslations.Source)\$(TargetName).%(_BiglandsEngineTranslations.Source).po')"
+          Command="&quot;$(DependencyDir)\Gettext.Net\GNU.Gettext.Msgfmt.exe&quot; -r $(TargetName) -d &quot;$(TargetDir)\&quot; -l %(_BiglandsEngineTranslations.Identity) -L &quot;$(DependencyDir)\Gettext.Net&quot; &quot;$(MSBuildThisFileDirectory)..\localization\%(_BiglandsEngineTranslations.Source)\$(TargetName).%(_BiglandsEngineTranslations.Source).po&quot;" />
+
+    <ItemGroup>
+      <SatelliteDllsProjectOutputGroupOutputIntermediate Include="$(OutDir)%(_BiglandsEngineTranslations.Identity)\$(TargetName).Messages.resources.dll" Condition="Exists('$(OutDir)%(_BiglandsEngineTranslations.Identity)\$(TargetName).Messages.resources.dll')">
+        <TargetPath>%(_BiglandsEngineTranslations.Identity)\$(TargetName).Messages.resources.dll</TargetPath>
+        <Culture>%(_BiglandsEngineTranslations.Identity)</Culture>
+      </SatelliteDllsProjectOutputGroupOutputIntermediate>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_BiglandsEngineSetFinalOutputPathOnBuildOutputFiles" AfterTargets="_GetBuildOutputFilesWithTfm">
+    <ItemGroup>
+      <BuildOutputInPackage Update="@(BuildOutputInPackage)" Condition="'%(BuildOutputInPackage.FinalOutputPath)' == ''">
+        <FinalOutputPath>$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '%(BuildOutputInPackage.FullPath)'))</FinalOutputPath>
+      </BuildOutputInPackage>
+    </ItemGroup>    
+  </Target>
+
+  <PropertyGroup>
+    <_SdkLanguageSourceName Condition="'$(MSBuildProjectExtension)' == '.csproj'">CSharp</_SdkLanguageSourceName>
+  </PropertyGroup>
+  
+    <!-- A workaround for https://github.com/microsoft/msbuild/issues/4584 and resolves https://github.com/onovotny/MSBuildSdkExtras/issues/176 -->
+  <Target Name="_RemoveNativeReferencesManifest" Condition="'$(TargetFramework)' == '$(BiglandsEngineFrameworkiOS)'" AfterTargets="BuiltProjectOutputGroup">
+    <ItemGroup>
+      <_BuiltProjectOutputGroupOutputIntermediate Remove="$(OutDir)$(_DeploymentTargetApplicationManifestFileName)" />
+      <BuiltProjectOutputGroupOutput Remove="$(ProjectDir)$(OutDir)$(_DeploymentTargetApplicationManifestFileName)" />
+    </ItemGroup>
+  </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="'$(BiglandsEngineProjectType)' != 'Cpp'" />
+</Project>

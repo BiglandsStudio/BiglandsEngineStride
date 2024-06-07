@@ -1,14 +1,14 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: Stride Docs
-    url: https://github.com/stride3d/stride-docs/issues
-    about: Please report documentation issues in the Stride Docs repository.
+  - name: BiglandsEngine Docs
+    url: https://github.com/BiglandsEngine3d/BiglandsEngine-docs/issues
+    about: Please report documentation issues in the BiglandsEngine Docs repository.
 
-  - name: Stride Website
-    url: https://github.com/stride3d/stride-website/issues
-    about: Please report website issues in the Stride Website repository.
+  - name: BiglandsEngine Website
+    url: https://github.com/BiglandsEngine3d/BiglandsEngine-website/issues
+    about: Please report website issues in the BiglandsEngine Website repository.
 
-  - name: Stride Community Toolkit
-    url: https://github.com/stride3d/stride-community-toolkit/issues
-    about: Please report community toolkit issues in the Stride Community Toolkit repository.
+  - name: BiglandsEngine Community Toolkit
+    url: https://github.com/BiglandsEngine3d/BiglandsEngine-community-toolkit/issues
+    about: Please report community toolkit issues in the BiglandsEngine Community Toolkit repository.

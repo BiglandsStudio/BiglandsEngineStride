@@ -1,3 +1,3 @@
 CALL "%VS140COMNTOOLS%VsDevCmd.bat"
-msbuild Stride.build /p:StrideGenerateDoc=true /t:BuildWindows > NUL
+msbuild BiglandsEngine.build /p:BiglandsEngineGenerateDoc=true /t:BuildWindows > NUL
 

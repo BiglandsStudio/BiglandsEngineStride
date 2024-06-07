@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" TreatAsLocalProperty="BiglandsEngineGraphicsApis">
+  <!--Import Unit Tests Local Settings for the solution being loaded -->
+  <Import Project="$(MSBuildThisFileDirectory)../../build/$(SolutionName).UnitTests.Build.targets" Condition="Exists('$(MSBuildThisFileDirectory)../../build/$(SolutionName).UnitTests.Build.targets')" />
+
+  <!-- Setup GraphicsApi (we do it even if BiglandsEngineGraphicsApiDependent is not set to true, so that ProjectReference works) -->
+  <PropertyGroup>
+    <IsTestProject>true</IsTestProject>
+    <!-- Check if we have override -->
+    <BiglandsEngineGraphicsApis Condition="'$(BiglandsEngineGraphicsApisTest)' != ''">$(BiglandsEngineGraphicsApisTest)</BiglandsEngineGraphicsApis>
+    
+    <!-- Build list of Graphics API for platform that supports multiple -->
+    <BiglandsEngineGraphicsApis Condition="'$(BiglandsEnginePlatform)' == 'Windows' And '$(BiglandsEngineGraphicsApiDependentBuildAll)' == 'true'">Direct3D11;Direct3D12;OpenGL;OpenGLES;Vulkan</BiglandsEngineGraphicsApis>
+    <BiglandsEngineGraphicsApis Condition="'$(BiglandsEnginePlatform)' == 'Windows' And '$(BiglandsEngineGraphicsApis)' == ''">Direct3D11</BiglandsEngineGraphicsApis>
+  
+    <!-- Setup default GraphicsApi-->
+    <BiglandsEngineGraphicsApi Condition="'$(BiglandsEngineGraphicsApi)' == '' And '$(BiglandsEngineGraphicsApis)' != ''">$(BiglandsEngineGraphicsApis.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</BiglandsEngineGraphicsApi>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(BiglandsEngineCompileAssets)' == 'true' And '$(BiglandsEngineCompilerTargetsEnable)' != 'false'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\assets\BiglandsEngine.Core.Assets.CompilerApp\BiglandsEngine.Core.Assets.CompilerApp.csproj">
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <GlobalPropertiesToRemove>TargetFramework</GlobalPropertiesToRemove>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)BiglandsEngine.PackageVersion.targets"/>
+
+  <PropertyGroup>
+  <!-- Do not compile unit test when packaging -->
+    <BiglandsEngineCompilerTargetsEnable Condition="'$(BiglandsEngineSkipUnitTests)' == 'true'">false</BiglandsEngineCompilerTargetsEnable>
+    <BiglandsEngineCompilerTargetsEnable Condition="'$(BiglandsEnginePackageBuild)' == 'true'">false</BiglandsEngineCompilerTargetsEnable>
+
+    <BiglandsEngineCommonDependenciesDir></BiglandsEngineCommonDependenciesDir>
+
+    <!-- Unit tests are executables (execute asset compiler, embed native libraries, etc... -->
+    <BiglandsEngineIsExecutable>true</BiglandsEngineIsExecutable>
+    <BiglandsEngineCompileAssetOptions>--compile-property:BuildProjectReferences=false</BiglandsEngineCompileAssetOptions>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(BiglandsEngineGraphicsApiDependent)' != 'true'">
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\bin\Tests\$(AssemblyName)\$(BiglandsEnginePlatform)\</OutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(BiglandsEnginePlatform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BiglandsEngineGraphicsApiDependent)' == 'true'">
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\bin\Tests\$(AssemblyName)\$(BiglandsEnginePlatform)\$(BiglandsEngineGraphicsApi)\</OutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(BiglandsEnginePlatform)-$(BiglandsEngineGraphicsApi)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(BiglandsEnginePlatform)' == 'Windows'">
+    <StartupObject>xunit.runner.BiglandsEngine.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(BiglandsEnginePlatform)' == 'Windows'">
+    <Compile Condition="'$(BiglandsEngineGraphicsApiDependent)' != 'true'" Include="$(MSBuildThisFileDirectory)..\shared\tests\xunit\LauncherSimple.Windows.cs">
+      <Link>LauncherSimple.Windows.cs</Link>
+    </Compile>
+    <Compile Condition="'$(BiglandsEngineGraphicsApiDependent)' == 'true'" Include="$(MSBuildThisFileDirectory)..\shared\tests\xunit\LauncherSimple.Windows.cs">
+      <Link>LauncherGame.Windows.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Used by BiglandsEngine.build to detect if unit tests prefer to run in 32 or 64 bits -->
+  <Target Name="_BiglandsEngineAfterGetTargetPathWithTargetPlatformMoniker" AfterTargets="GetTargetPathWithTargetPlatformMoniker">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Update="$(TargetPath)">
+        <PlatformTarget>$(PlatformTarget)</PlatformTarget>
+      </TargetPathWithTargetPlatformMoniker>
+    </ItemGroup>
+  </Target>
+
+  <!-- Make sure sdsl/sdfx are properly setup with code generator; also mark generated code file as dependent -->
+  <ItemGroup>
+    <Compile Update="**\*.sdsl.cs" DependentUpon="%(Filename)" />
+    <None Update="**\*.sdsl" Generator="BiglandsEngineShaderKeyGenerator" />
+    <Compile Update="**\*.sdfx.cs" DependentUpon="%(Filename)" />
+    <None Update="**\*.sdfx" Generator="BiglandsEngineEffectCodeGenerator" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="TeamCity.VSTest.TestAdapter" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Condition="'$(IsCrossTargetingBuild)' == 'true'" Project="$(MSBuildThisFileDirectory)BiglandsEngine.UnitTests.CrossTargeting.targets"/>
+
+  <!-- Add Default targets used by Msbuild for undefined Platforms / or when skipping compilation under a platform -->
+  <Import Condition="'$(BiglandsEngineCompilerTargetsEnable)' == 'false'" Project="$(MSBuildThisFileDirectory)BiglandsEngine.UnitTests.DisableBuild.targets"/>
+
+  <!-- This needs to be after Sdk.targets -->
+  <Import Project="$(MSBuildThisFileDirectory)..\core\BiglandsEngine.Core\build\BiglandsEngine.Core.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)BiglandsEngine.GraphicsApi.PackageReference.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)BiglandsEngine.GraphicsApi.Dev.targets"/>
+  <Import Condition="'$(BiglandsEngineCompileAssets)' == 'true' And '$(BiglandsEngineCompilerTargetsEnable)' != 'false'" Project="$(MSBuildThisFileDirectory)..\assets\BiglandsEngine.Core.Assets.CompilerApp\build\BiglandsEngine.Core.Assets.CompilerApp.targets"/>
+
+  <!-- Ensure native libs get copied to output folder of test projects -->
+  <Target Name="_BiglandsEngineSetupNativeLibraries" DependsOnTargets="_BiglandsEngineBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <None Include="@(_BiglandsEngineDependencyNativeLib)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -1,0 +1,8 @@
+{
+  "solution": {
+    "path": "BiglandsEngine.sln",
+    "projects": [
+      "..\\sources\\tools\\BiglandsEngine.VisualStudio.Package.Tests\\BiglandsEngine.VisualStudio.Package.Tests.csproj"
+    ]
+  }
+}

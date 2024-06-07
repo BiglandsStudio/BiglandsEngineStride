@@ -1,0 +1,33 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Games.Testing\BiglandsEngine.Games.Testing.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.ConnectionRouter\BiglandsEngine.ConnectionRouter.csproj" />
+
+    <!-- Ensure GameStudio is built and referenced as a NuGet dependency, it shouldn't be used though -->
+    <ProjectReference Include="..\..\editor\BiglandsEngine.GameStudio\BiglandsEngine.GameStudio.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="..\..\shared\BiglandsEngine.Core.ShellHelper\BiglandsEngine.Core.ShellHelper.projitems" Label="Shared" />
+  <Import Project="..\..\shared\BiglandsEngine.NuGetResolver.Targets\BiglandsEngine.NuGetResolver.Targets.projitems" Label="Shared" />
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

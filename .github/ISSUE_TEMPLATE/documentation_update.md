@@ -1,6 +1,6 @@
 ---
 name: Documentation Update
-about: Suggest updates or improvements to XML comments (Stride API), README.md, or other documentation files.
+about: Suggest updates or improvements to XML comments (BiglandsEngine API), README.md, or other documentation files.
 title: '[Docs] '
 labels: 'area-Doc'
 assignees: ''
@@ -21,4 +21,4 @@ Add any other context or screenshots about the documentation update here.
 **Proposed changes**
 If you have a specific change in mind, you can suggest the text or code snippet here.
 
-<!--- Thank you for helping improve Stride's documentation! --->
+<!--- Thank you for helping improve BiglandsEngine's documentation! --->

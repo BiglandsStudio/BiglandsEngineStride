@@ -1,0 +1,46 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- ==================================================================
+       Target for PackageReference to properly select .dll from appropriate BiglandsEngineGraphicsApi
+  -->
+  <Target Name="_BiglandsEnginePackageReferenceResolveGraphicsApi" AfterTargets="ResolvePackageAssets">
+    <PropertyGroup>
+      <!-- Transmit current graphics API. This is useful in case we have transitions such as: Direct3D12->ProjectWithoutGraphicsApi->Direct3D12
+           otherwise it would try to build 3rd project twice (due to the reference from ProjectWithoutGraphicsApi). -->
+      <_BiglandsEngineGraphicsApiCurrent>$(BiglandsEngineGraphicsApi)</_BiglandsEngineGraphicsApiCurrent>
+      <!-- We use a fallback in case the project without graphics API is the project initiating the build. -->
+      <_BiglandsEngineGraphicsApiCurrent Condition="'$(_BiglandsEngineGraphicsApiCurrent)' == '' And '$(BiglandsEngineGraphicsApis)' != ''">$(BiglandsEngineGraphicsApis.Split(';', StringSplitOptions.RemoveEmptyEntries)[0])</_BiglandsEngineGraphicsApiCurrent>
+      <_BiglandsEngineGraphicsApiCurrent Condition="'$(_BiglandsEngineGraphicsApiCurrent)' == ''">$(BiglandsEngineDefaultGraphicsApi)</_BiglandsEngineGraphicsApiCurrent>
+      <_BiglandsEngineGraphicsApiCurrent Condition="'$(_BiglandsEngineGraphicsApiCurrent)' == ''">Direct3D11</_BiglandsEngineGraphicsApiCurrent>
+    </PropertyGroup>
+    <ItemGroup>
+      <_BiglandsEngineGraphicsRuntimeCopyLocalFodlers Include="@(RuntimeCopyLocalItems->'%(RootDir)%(Directory)$(_BiglandsEngineGraphicsApiCurrent)')" Condition="'%(NuGetPackageId)' != '' And Exists('%(RootDir)%(Directory)$(_BiglandsEngineGraphicsApiCurrent)')">
+      </_BiglandsEngineGraphicsRuntimeCopyLocalFodlers>
+      <RuntimeCopyLocalItems Remove="@(RuntimeCopyLocalItems)" Condition="'%(NuGetPackageId)' != '' And Exists('%(RootDir)%(Directory)$(_BiglandsEngineGraphicsApiCurrent)\')">
+      </RuntimeCopyLocalItems>
+    </ItemGroup>
+
+    <!-- There might have been multiple RuntimeCopyLocalItems in the same folder, resulting in multiple identical _BiglandsEngineGraphicsRuntimeCopyLocalFodlers -->
+    <RemoveDuplicates Inputs="@(_BiglandsEngineGraphicsRuntimeCopyLocalFodlers)">
+      <Output TaskParameter="Filtered" ItemName="_BiglandsEngineGraphicsRuntimeCopyLocalFodlersFiltered" />
+    </RemoveDuplicates>
+    
+    <!-- Expand .dll/.exe specific to this Graphics API -->
+    <CreateItem Include="@(_BiglandsEngineGraphicsRuntimeCopyLocalFodlersFiltered->'%(Identity)\*.dll')" AdditionalMetadata="CopyLocal=true;AssetType=runtime" PreserveExistingMetadata="false">
+      <Output TaskParameter="Include" ItemName="_BiglandsEngineGraphicsRuntimeCopyLocal" />
+    </CreateItem>
+    <CreateItem Include="@(_BiglandsEngineGraphicsRuntimeCopyLocalFodlersFiltered->'%(Identity)\*.exe')" AdditionalMetadata="CopyLocal=true;AssetType=runtime" PreserveExistingMetadata="false">
+      <Output TaskParameter="Include" ItemName="_BiglandsEngineGraphicsRuntimeCopyLocal" />
+    </CreateItem>
+
+    <ItemGroup>
+      <_BiglandsEngineGraphicsRuntimeCopyLocal Update="@(_BiglandsEngineGraphicsRuntimeCopyLocal)">
+        <DestinationSubPath>%(Filename)%(Extension)</DestinationSubPath>
+        <PathInPackage>$([System.Text.RegularExpressions.Regex]::Match('%(PathInPackage)', `(.*)/[^/]*`).get_Groups().get_Item(1).ToString())/$(_BiglandsEngineGraphicsApiCurrent)/%(Filename)%(Extension)</PathInPackage>
+      </_BiglandsEngineGraphicsRuntimeCopyLocal>
+
+      <RuntimeCopyLocalItems Include="@(_BiglandsEngineGraphicsRuntimeCopyLocal)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

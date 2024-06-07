@@ -1,15 +1,15 @@
 ﻿<Project>
   <PropertyGroup>
-    <StrideRuntime>true</StrideRuntime>
+    <BiglandsEngineRuntime>true</BiglandsEngineRuntime>
   </PropertyGroup>
 
-  <Import Project="..\..\targets\Stride.Core.props" />
+  <Import Project="..\..\targets\BiglandsEngine.Core.props" />
 
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <StrideBuildTags>*</StrideBuildTags>
-    <AssemblyName>Stride.Irony</AssemblyName>
+    <BiglandsEngineBuildTags>*</BiglandsEngineBuildTags>
+    <AssemblyName>BiglandsEngine.Irony</AssemblyName>
   </PropertyGroup>
   
   <ItemGroup>
@@ -72,6 +72,6 @@
     <None Include="Parsing\Data\Construction\_about_parser_construction.txt" />
   </ItemGroup>
   
-  <Import Project="$(StrideSdkTargets)" />
+  <Import Project="$(BiglandsEngineSdkTargets)" />
 
 </Project>

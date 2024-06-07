@@ -1,6 +1,6 @@
 # Third Party Software
 
-Stride uses the following open-source products.
+BiglandsEngine uses the following open-source products.
 
 ## Runtime
 
@@ -35,7 +35,7 @@ Stride uses the following open-source products.
 
 ## Editor & Build
 
-### License gift to Stride
+### License gift to BiglandsEngine
 
 * [Advanced Installer](https://www.advancedinstaller.com/) graciously offered us an Enterprise license. Thanks!
 * [NDepend](https://www.ndepend.com/) for static code analysis. Thanks for providing us an Open Source license!
@@ -48,7 +48,7 @@ Stride uses the following open-source products.
 * [DocFX](https://dotnet.github.io/docfx/) (MIT License)
 * [ffmpeg](https://ffmpeg.org/) (GPL 3)
 * [FreeImage](http://freeimage.sourceforge.net/) (FreeImage Public License - Version 1.0)
-* [Gettext.NET](https://sourceforge.net/projects/gettextnet/) (LGPL 2.1, [modified binaries](https://github.com/stride3d/gettextnet))
+* [Gettext.NET](https://sourceforge.net/projects/gettextnet/) (LGPL 2.1, [modified binaries](https://github.com/BiglandsEngine3d/gettextnet))
 * [ILRepack](https://github.com/gluck/il-repack) (Apache License 2.0)
 * [ImageMagick](http://www.imagemagick.org/)
 * [Markdown.XAML](https://github.com/theunrepentantgeek/Markdown.XAML) (MIT License)

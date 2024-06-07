@@ -1,0 +1,30 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <BiglandsEngineAssemblyProcessor>false</BiglandsEngineAssemblyProcessor>
+    <OutputType>Library</OutputType>
+    <TargetFramework>$(BiglandsEngineXplatEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\ConsoleProgram.cs">
+      <Link>Frontend\Console\ConsoleProgram.cs</Link>
+    </Compile>
+    <Compile Remove="Frontend\TexArray.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BiglandsEngineNativeLib Include="$(MSBuildThisFileDirectory)..\..\..\deps\FreeImage\Release\**\*.dll">
+      <Link>runtimes\%(RecursiveDir)native\%(Filename)%(Extension)</Link>
+    </BiglandsEngineNativeLib>
+    <BiglandsEngineNativeLib Include="$(MSBuildThisFileDirectory)..\..\..\deps\TextureWrappers\Release\**\*.dll">
+      <Link>runtimes\%(RecursiveDir)native\%(Filename)%(Extension)</Link>
+    </BiglandsEngineNativeLib>
+    <BiglandsEngineNativeLib Include="$(MSBuildThisFileDirectory)..\..\..\deps\PVRTT\**\*.dll">
+      <Link>runtimes\%(RecursiveDir)native\%(Filename)%(Extension)</Link>
+    </BiglandsEngineNativeLib>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Graphics\BiglandsEngine.Graphics.csproj" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

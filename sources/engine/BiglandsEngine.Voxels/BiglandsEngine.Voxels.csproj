@@ -1,0 +1,26 @@
+<Project>
+  <PropertyGroup>
+    <BiglandsEngineRuntime>true</BiglandsEngineRuntime>
+  </PropertyGroup>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <BiglandsEngineBuildTags>*</BiglandsEngineBuildTags>
+    <BiglandsEnginePackAssets>true</BiglandsEnginePackAssets>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BiglandsEngine.Engine\BiglandsEngine.Engine.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.Native\BiglandsEngine.Native.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.Games\BiglandsEngine.Games.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.Rendering\BiglandsEngine.Rendering.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

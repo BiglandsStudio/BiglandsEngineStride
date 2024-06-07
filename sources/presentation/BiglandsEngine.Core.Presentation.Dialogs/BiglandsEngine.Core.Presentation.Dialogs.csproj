@@ -1,0 +1,25 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.Core.props" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <BiglandsEngineAssemblyProcessorOptions>--auto-module-initializer</BiglandsEngineAssemblyProcessorOptions>
+    <UseWPF>true</UseWPF>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>  
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BiglandsEngine.Core.Presentation.Wpf\BiglandsEngine.Core.Presentation.Wpf.csproj" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

@@ -9,7 +9,7 @@
       "login": "xen2",
       "name": "xen2",
       "avatar_url": "https://avatars.githubusercontent.com/u/527565?v=4",
-      "profile": "https://stride3d.net",
+      "profile": "https://BiglandsEngine3d.net",
       "contributions": [
         "code"
       ]
@@ -502,8 +502,8 @@
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "stride",
-  "projectOwner": "stride3d",
+  "projectName": "BiglandsEngine",
+  "projectOwner": "BiglandsEngine3d",
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,

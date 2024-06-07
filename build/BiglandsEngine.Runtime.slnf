@@ -1,0 +1,36 @@
+{
+  "solution": {
+    "path": "BiglandsEngine.sln",
+    "projects": [
+      "..\\sources\\core\\BiglandsEngine.Core.IO\\BiglandsEngine.Core.IO.csproj",
+      "..\\sources\\core\\BiglandsEngine.Core.Mathematics\\BiglandsEngine.Core.Mathematics.csproj",
+      "..\\sources\\core\\BiglandsEngine.Core.MicroThreading\\BiglandsEngine.Core.MicroThreading.csproj",
+      "..\\sources\\core\\BiglandsEngine.Core.Serialization\\BiglandsEngine.Core.Serialization.csproj",
+      "..\\sources\\core\\BiglandsEngine.Core.Tasks\\BiglandsEngine.Core.Tasks.csproj",
+      "..\\sources\\core\\BiglandsEngine.Core\\BiglandsEngine.Core.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Audio\\BiglandsEngine.Audio.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Engine\\BiglandsEngine.Engine.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Games\\BiglandsEngine.Games.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Graphics\\BiglandsEngine.Graphics.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Input\\BiglandsEngine.Input.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Native\\BiglandsEngine.Native.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Navigation\\BiglandsEngine.Navigation.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Particles\\BiglandsEngine.Particles.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Physics\\BiglandsEngine.Physics.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Rendering\\BiglandsEngine.Rendering.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Shaders.Compiler\\BiglandsEngine.Shaders.Compiler.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Shaders.Parser\\BiglandsEngine.Shaders.Parser.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Shaders\\BiglandsEngine.Shaders.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Shared\\Refactor\\BiglandsEngine.Refactor.shproj",
+      "..\\sources\\engine\\BiglandsEngine.SpriteStudio.Runtime\\BiglandsEngine.SpriteStudio.Runtime.csproj",
+      "..\\sources\\engine\\BiglandsEngine.UI\\BiglandsEngine.UI.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Video\\BiglandsEngine.Video.csproj",
+      "..\\sources\\engine\\BiglandsEngine.VirtualReality\\BiglandsEngine.VirtualReality.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Voxels\\BiglandsEngine.Voxels.csproj",
+      "..\\sources\\engine\\BiglandsEngine\\BiglandsEngine.csproj",
+      "..\\sources\\shaders\\Irony\\Irony.csproj",
+      "..\\sources\\shaders\\BiglandsEngine.Core.Shaders\\BiglandsEngine.Core.Shaders.csproj",
+      "..\\sources\\shared\\BiglandsEngine.Core.ShellHelper\\BiglandsEngine.Core.ShellHelper.shproj"
+    ]
+  }
+}

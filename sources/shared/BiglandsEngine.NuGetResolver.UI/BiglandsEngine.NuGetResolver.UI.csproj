@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <UseWPF>true</UseWPF>
+    <DefineConstants>BiglandsEngine_NUGET_RESOLVER_UI;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\BiglandsEngine.NuGetResolver\NuGetAssemblyResolver.cs" Link="NuGetAssemblyResolver.cs" />
+    <Compile Include="..\BiglandsEngine.NuGetResolver\RestoreHelper.cs" Link="RestoreHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NuGet.Protocol" />
+    <PackageReference Include="NuGet.PackageManagement" />
+    <PackageReference Include="NuGet.Resolver" />
+    <PackageReference Include="NuGet.Commands" />
+  </ItemGroup>
+
+</Project>

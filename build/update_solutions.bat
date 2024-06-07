@@ -1,13 +1,13 @@
 @echo off
 
 echo Processing Runtime (currently using Linux as template)
-..\sources\tools\Stride.ProjectGenerator\bin\Debug\net472\Stride.ProjectGenerator.exe solution Stride.sln -o Stride.Runtime.sln -p Linux
+..\sources\tools\BiglandsEngine.ProjectGenerator\bin\Debug\net472\BiglandsEngine.ProjectGenerator.exe solution BiglandsEngine.sln -o BiglandsEngine.Runtime.sln -p Linux
 echo.
 
 echo Processing Android
-..\sources\tools\Stride.ProjectGenerator\bin\Debug\net472\Stride.ProjectGenerator.exe solution Stride.sln -o Stride.Android.sln -p Android
+..\sources\tools\BiglandsEngine.ProjectGenerator\bin\Debug\net472\BiglandsEngine.ProjectGenerator.exe solution BiglandsEngine.sln -o BiglandsEngine.Android.sln -p Android
 echo.
 
 echo Processing iOS
-..\sources\tools\Stride.ProjectGenerator\bin\Debug\net472\Stride.ProjectGenerator.exe solution Stride.sln -o Stride.iOS.sln -p iOS
+..\sources\tools\BiglandsEngine.ProjectGenerator\bin\Debug\net472\BiglandsEngine.ProjectGenerator.exe solution BiglandsEngine.sln -o BiglandsEngine.iOS.sln -p iOS
 echo.

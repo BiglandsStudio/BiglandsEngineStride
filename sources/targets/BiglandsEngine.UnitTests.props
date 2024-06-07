@@ -1,0 +1,31 @@
+<!-- Build file pre-included by all BiglandsEngine projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="$(MSBuildThisFileDirectory)..\..\build\$(SolutionName).Build.props" Condition="Exists('$(MSBuildThisFileDirectory)..\..\build\$(SolutionName).Build.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\build\BiglandsEngine.Core.Build.props" Condition="Exists('$(MSBuildThisFileDirectory)..\..\build\BiglandsEngine.Core.Build.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\sources\core\BiglandsEngine.Core\build\BiglandsEngine.Core.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)BiglandsEngine.Core.TargetFrameworks.Editor.props" />
+
+  <PropertyGroup>
+    <!-- Default fallback -->
+    <BiglandsEnginePlatform Condition="'$(BiglandsEnginePlatform)' == ''">Windows</BiglandsEnginePlatform>
+    <OutputType>WinExe</OutputType>
+
+    <BiglandsEnginePlatformFullName>$(BiglandsEnginePlatform)</BiglandsEnginePlatformFullName>
+    <BiglandsEnginePlatformFullName Condition="'$(BiglandsEngineBuildDirExtension)' != ''">$(BiglandsEnginePlatformFullName)-$(BiglandsEngineBuildDirExtension)</BiglandsEnginePlatformFullName>
+
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Use this so that tests are detected by "dotnet test" even though xunit is referenced transitively -->
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <!-- Include BiglandsEngine analyzer/code generator -->
+  <Import Project="$(MSBuildThisFileDirectory)BiglandsEngine.Core.CompilerServices.props"/>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+</Project>

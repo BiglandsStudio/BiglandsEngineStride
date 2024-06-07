@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <BiglandsEngineSkipAutoPack>false</BiglandsEngineSkipAutoPack>
+    <IsPackable>true</IsPackable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.utility" />
+  </ItemGroup>
+
+  <Import Project="..\..\targets\BiglandsEngine.PackageVersion.targets" />
+  <Import Project="..\..\targets\BiglandsEngine.AutoPack.targets" />
+</Project>

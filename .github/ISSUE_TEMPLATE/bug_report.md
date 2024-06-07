@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a bug report to help us improve Stride.
+about: Create a bug report to help us improve BiglandsEngine.
 title: ''
 labels: 'bug'
 assignees: ''

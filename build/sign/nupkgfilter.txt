@@ -1,2 +1,2 @@
-**/Stride*.exe
+**/BiglandsEngine*.exe
 **/*.vsix

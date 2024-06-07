@@ -1,0 +1,19 @@
+{
+  "solution": {
+    "path": "BiglandsEngine.sln",
+    "projects": [
+      "..\\sources\\assets\\BiglandsEngine.Core.Assets.Quantum.Tests\\BiglandsEngine.Core.Assets.Quantum.Tests.csproj",
+      "..\\sources\\assets\\BiglandsEngine.Core.Assets.Tests\\BiglandsEngine.Core.Assets.Tests.csproj",
+      "..\\sources\\buildengine\\BiglandsEngine.Core.BuildEngine.Tests\\BiglandsEngine.Core.BuildEngine.Tests.csproj",
+      "..\\sources\\core\\BiglandsEngine.Core.Design.Tests\\BiglandsEngine.Core.Design.Tests.csproj",
+      "..\\sources\\core\\BiglandsEngine.Core.Tests\\BiglandsEngine.Core.Tests.csproj",
+      "..\\sources\\core\\BiglandsEngine.Core.Yaml.Tests\\BiglandsEngine.Core.Yaml.Tests.csproj",
+      "..\\sources\\editor\\BiglandsEngine.Core.Assets.Editor.Tests\\BiglandsEngine.Core.Assets.Editor.Tests.csproj",
+      "..\\sources\\editor\\BiglandsEngine.GameStudio.Tests\\BiglandsEngine.GameStudio.Tests.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Shaders.Tests\\BiglandsEngine.Shaders.Tests.Windows.csproj",
+      "..\\sources\\presentation\\BiglandsEngine.Core.Presentation.Quantum.Tests\\BiglandsEngine.Core.Presentation.Quantum.Tests.csproj",
+      "..\\sources\\presentation\\BiglandsEngine.Core.Presentation.Tests\\BiglandsEngine.Core.Presentation.Tests.csproj",
+      "..\\sources\\presentation\\BiglandsEngine.Core.Quantum.Tests\\BiglandsEngine.Core.Quantum.Tests.csproj"
+    ]
+  }
+}

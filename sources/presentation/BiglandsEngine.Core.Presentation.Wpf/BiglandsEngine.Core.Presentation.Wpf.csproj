@@ -1,0 +1,52 @@
+<Project>
+
+  <Import Project="..\..\targets\BiglandsEngine.Core.props" />
+
+  <PropertyGroup>
+    <BiglandsEngineBuildTags>WindowsTools</BiglandsEngineBuildTags>
+    <TargetFramework>$(BiglandsEngineEditorTargetFramework)</TargetFramework>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <BiglandsEngineAssemblyProcessorOptions>--auto-module-initializer --serialization</BiglandsEngineAssemblyProcessorOptions>
+    <BiglandsEngineLocalized>true</BiglandsEngineLocalized>
+    <RestorePackages>true</RestorePackages>
+    <UseWPF>true</UseWPF>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+    <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\BiglandsEngine.Core.Design\BiglandsEngine.Core.Design.csproj" />
+    <ProjectReference Include="..\..\presentation\BiglandsEngine.Core.Translation.Presentation\BiglandsEngine.Core.Translation.Presentation.csproj" />
+    <ProjectReference Include="..\BiglandsEngine.Core.Presentation\BiglandsEngine.Core.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Cursors\CursorDrag.cur" />
+    <Resource Include="Resources\Images\calendar--pencil.png" />
+    <Resource Include="Resources\Images\close_window.png" />
+    <Resource Include="Resources\Images\error-32.png" />
+    <Resource Include="Resources\Images\info-32.png" />
+    <Resource Include="Resources\Images\question-32.png" />
+    <Resource Include="Resources\Images\gear--pencil.png" />
+    <Resource Include="Resources\Images\lock-unlock.png" />
+    <Resource Include="Resources\Images\lock.png" />
+    <Resource Include="Resources\Images\eraser.png" />
+    <Resource Include="Resources\Images\ruler-triangle.png" />
+    <Resource Include="Resources\Images\cursor_north_south.png" />
+    <Resource Include="Resources\Images\cursor_west_east.png" />
+    <Resource Include="Resources\Images\warning-32.png" />
+  </ItemGroup>
+
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

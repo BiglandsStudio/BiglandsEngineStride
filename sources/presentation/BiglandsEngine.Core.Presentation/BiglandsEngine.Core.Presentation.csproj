@@ -1,0 +1,23 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.Core.props" />
+
+  <PropertyGroup>
+    <TargetFramework>$(BiglandsEngineXplatEditorTargetFramework)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\BiglandsEngine.Core.Design\BiglandsEngine.Core.Design.csproj" />
+    <ProjectReference Include="..\..\core\BiglandsEngine.Core.Translation\BiglandsEngine.Core.Translation.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

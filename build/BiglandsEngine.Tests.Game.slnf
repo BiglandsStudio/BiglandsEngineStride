@@ -1,0 +1,19 @@
+{
+  "solution": {
+    "path": "BiglandsEngine.sln",
+    "projects": [
+      "..\\sources\\engine\\BiglandsEngine.Assets.Tests\\BiglandsEngine.Assets.Tests.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Audio.Tests\\BiglandsEngine.Audio.Tests.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Engine.NoAssets.Tests\\BiglandsEngine.Engine.NoAssets.Tests.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Engine.Tests\\BiglandsEngine.Engine.Tests.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Graphics.Tests.10_0\\BiglandsEngine.Graphics.Tests.10_0.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Graphics.Tests.11_0\\BiglandsEngine.Graphics.Tests.11_0.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Graphics.Tests\\BiglandsEngine.Graphics.Tests.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Input.Tests\\BiglandsEngine.Input.Tests.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Navigation.Tests\\BiglandsEngine.Navigation.Tests.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Particles.Tests\\BiglandsEngine.Particles.Tests.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.Physics.Tests\\BiglandsEngine.Physics.Tests.Windows.csproj",
+      "..\\sources\\engine\\BiglandsEngine.UI.Tests\\BiglandsEngine.UI.Tests.Windows.csproj"
+    ]
+  }
+}

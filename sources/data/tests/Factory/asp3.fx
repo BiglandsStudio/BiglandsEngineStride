@@ -1,10 +1,10 @@
 // asp3.0
 
-// ‚±‚Ìs‚Í3dsMAX‚ª³‚µ‚¢ƒp[ƒT[‚Å“Ç‚İ‚Ş‚½‚ß‚Ég‚í‚ê‚é‚¨‚Ü‚¶‚È‚¢B
+// ï¿½ï¿½ï¿½Ìsï¿½ï¿½3dsMAXï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½[ï¿½Tï¿½[ï¿½Å“Ç‚İï¿½ï¿½Ş‚ï¿½ï¿½ß‚Égï¿½ï¿½ï¿½é‚¨ï¿½Ü‚ï¿½ï¿½È‚ï¿½ï¿½B
 //string ParamID = "0x003";
 
-// •ÏŠ·s—ñ
-// E‚±‚Ìƒpƒ‰ƒ[ƒ^‚Íƒrƒ…[ƒ|[ƒg‚ÌƒJƒƒ‰ˆÊ’u‚Æƒ‚ƒfƒ‹‚Ì”z’u‚ª”½‰f‚µ‚Ü‚·B
+// ï¿½ÏŠï¿½ï¿½sï¿½ï¿½
+// ï¿½Eï¿½ï¿½ï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½Íƒrï¿½ï¿½ï¿½[ï¿½|ï¿½[ï¿½gï¿½ÌƒJï¿½ï¿½ï¿½ï¿½ï¿½Ê’uï¿½Æƒï¿½ï¿½fï¿½ï¿½ï¿½Ì”zï¿½uï¿½ï¿½ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B
 float4x4 g_mtxWorld			: WORLD;
 float4x4 g_mtxView			: VIEW;
 float4x4 g_mtxProjection	: PROJECTION;
@@ -12,9 +12,9 @@ float4x4 g_mtxWorldViewProj : WORLDVIEWPROJ;
 float4x4 g_mtxWorldView		: WORLDVIEW;
 float4x4 g_imtxView			: VIEWI;
 
-// ƒ‰ƒCƒgƒpƒ‰ƒ[ƒ^
-// E‚±‚Ìƒpƒ‰ƒ[ƒ^‚ÍƒV[ƒ““à‚É‚ ‚éƒ‰ƒCƒg‚Ìî•ñ‚ª”½‰f‚µ‚Ü‚·B
-// Eƒpƒ‰ƒ[ƒ^‚ÍViewÀ•WŒn‚Åw’è‚³‚ê‚Ü‚·B
+// ï¿½ï¿½ï¿½Cï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^
+// ï¿½Eï¿½ï¿½ï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ÍƒVï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½éƒ‰ï¿½Cï¿½gï¿½Ìï¿½ñ‚ª”ï¿½ï¿½fï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B
+// ï¿½Eï¿½pï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ï¿½Viewï¿½ï¿½ï¿½Wï¿½nï¿½Åwï¿½è‚³ï¿½ï¿½Ü‚ï¿½ï¿½B
 float3 g_vtLightDir : Direction
 <  
 	string UIName = "* PARALLEL LIGHT"; 
@@ -27,13 +27,13 @@ float4 g_colorLight : LIGHTCOLOR
 	int LightRef = 0;
 > = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-// ƒ‰ƒCƒeƒBƒ“ƒO‚Ì—LŒø/–³Œø
+// ï¿½ï¿½ï¿½Cï¿½eï¿½Bï¿½ï¿½ï¿½Oï¿½Ì—Lï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½
 bool g_enablesLighting
 <
 	string UIName = "* LIGHTING";
 > = true;
 
-// ŠgU”½ËƒJƒ‰[‚Ìƒ\[ƒX‘I‘ğ
+// ï¿½gï¿½Uï¿½ï¿½ï¿½ËƒJï¿½ï¿½ï¿½[ï¿½Ìƒ\ï¿½[ï¿½Xï¿½Iï¿½ï¿½
 int g_diffuseColorSelect
 <
 	string UIName = "* DIFFUSE COLOR (0:Mate/1:Vert/2:Mate*Vert)";
@@ -43,19 +43,19 @@ int g_diffuseColorSelect
 	int UIStep = 1;
 > = 0;
 
-// ŠgU”½Ë‚ÌŒÅ’èƒJƒ‰[
+// ï¿½gï¿½Uï¿½ï¿½ï¿½Ë‚ÌŒÅ’ï¿½Jï¿½ï¿½ï¿½[
 float4 g_diffuseColor
 <
 	string UIName = "  + material color";
 > = float4( 0.80f, 0.80f, 0.80f, 1.0f );
 
-// ©ŒÈ”­Œõ
+// ï¿½ï¿½ï¿½È”ï¿½ï¿½ï¿½
 float3 g_emissionColor
 <
 	string UIName = "  + emission color";
 > = float3( 0.00f, 0.00f, 0.00f);
 
-// ƒ‰ƒCƒeƒBƒ“ƒO‚É‚¨‚¯‚éŠgU”½Ë‹P“x‚ÌƒXƒP[ƒ‹
+// ï¿½ï¿½ï¿½Cï¿½eï¿½Bï¿½ï¿½ï¿½Oï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½Uï¿½ï¿½ï¿½Ë‹Pï¿½xï¿½ÌƒXï¿½Pï¿½[ï¿½ï¿½
 float g_diffuseAttenuation
 <
 	string UIName = "  + luminance attenuation";
@@ -64,7 +64,7 @@ float g_diffuseAttenuation
 	float UIStep = 0.01f;
 > = 1.0f;
 
-// ƒXƒyƒLƒ…ƒ‰[‚Ìİ’è
+// ï¿½Xï¿½yï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Ìİ’ï¿½
 bool g_enablesSpecular
 <
 	string UIName = "* SPECULAR";
@@ -92,7 +92,7 @@ float g_SpecularPower
 	float UIMax = 256.0f;
 > = 32.0f;
 
-// ƒŠƒ€ƒXƒyƒLƒ…ƒ‰[
+// ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½yï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[
 bool g_enablesRimSpecular
 <
 	string UIName = "* RIM-SPECULAR";
@@ -120,9 +120,9 @@ float g_rimSpecularSelfLuminous
 > = 1.0f;
 
 
-// ƒx[ƒXƒJƒ‰[ƒeƒNƒXƒ`ƒƒ
-// Eƒrƒbƒgƒ}ƒbƒv
-// Eƒ}ƒbƒvƒ`ƒƒƒ“ƒlƒ‹
+// ï¿½xï¿½[ï¿½Xï¿½Jï¿½ï¿½ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½
+// ï¿½Eï¿½rï¿½bï¿½gï¿½}ï¿½bï¿½v
+// ï¿½Eï¿½}ï¿½bï¿½vï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½
 bool g_enablesBaseColorTex
 <
 	string UIName = "* BASE COLOR TEXTURE";
@@ -155,9 +155,9 @@ int g_blendBaseColorTexture
 	int UIStep = 1;
 > = 0;
 
-// •â•ƒJƒ‰[ƒeƒNƒXƒ`ƒƒ
-// Eƒrƒbƒgƒ}ƒbƒv
-// Eƒ}ƒbƒvƒ`ƒƒƒ“ƒlƒ‹
+// ï¿½â•ï¿½Jï¿½ï¿½ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½
+// ï¿½Eï¿½rï¿½bï¿½gï¿½}ï¿½bï¿½v
+// ï¿½Eï¿½}ï¿½bï¿½vï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½
 bool g_enablesUtilColorTex
 <
 	string UIName = "* UTIL COLOR TEXTURE";
@@ -189,7 +189,7 @@ int g_blendUtilColorTexture
 	int UIStep = 1;
 > = 0;
 
-// ƒOƒƒXƒ}ƒbƒv
+// ï¿½Oï¿½ï¿½ï¿½Xï¿½}ï¿½bï¿½v
 bool g_enablesGlossMap
 <
 	string UIName = "* GLOSS MAP";
@@ -203,10 +203,10 @@ int g_indexGlossSrc
 	int UIStep = 1;
 > = 0;
 
-// –@üƒ}ƒbƒvƒeƒNƒXƒ`ƒƒ
-// Eƒrƒbƒgƒ}ƒbƒv
-// Eƒ}ƒbƒvƒ`ƒƒƒ“ƒlƒ‹
-// EŠî’êƒxƒNƒgƒ‹
+// ï¿½@ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½
+// ï¿½Eï¿½rï¿½bï¿½gï¿½}ï¿½bï¿½v
+// ï¿½Eï¿½}ï¿½bï¿½vï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½
+// ï¿½Eï¿½ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½
 bool g_enablesNormalMap
 <
 	string UIName = "* NORMAL MAP";
@@ -229,7 +229,7 @@ sampler2D g_texsmpNormalMap = sampler_state
 	AddressV = WRAP;
 };
 
-// –@üƒ}ƒbƒv‚ÌŠî’êƒxƒNƒgƒ‹‚Ì‘I‘ğ(ƒ[ƒJƒ‹À•WŒn/ÚüÀ•WŒn)
+// ï¿½@ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ÌŠï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½Ì‘Iï¿½ï¿½(ï¿½ï¿½ï¿½[ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½n/ï¿½Úï¿½ï¿½ï¿½ï¿½Wï¿½n)
 int g_normalMapType
 <
 	string UIName = "  + Type (0:ObjLocal/1:Tangent)";
@@ -239,7 +239,7 @@ int g_normalMapType
 	int UIStep = 1;
 > = 0;
 
-// ƒ[ƒJƒ‹À•WŒn‚Å‚Ì–@üƒ}ƒbƒv‚ÌRGB‚ÌŠî’êƒxƒNƒgƒ‹B
+// ï¿½ï¿½ï¿½[ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½nï¿½Å‚Ì–@ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ï¿½RGBï¿½ÌŠï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½B
 int g_normalMapAxisR
 <
 	string UIName = "  |  + base axis of R";
@@ -277,35 +277,35 @@ const float3 g_vtBaseAxis[6] =
 	{ 0, 0, -1, },		// -Z
 };
 
-// ÚüÀ•WŒn‚Å‚Ì–@üƒ}ƒbƒv‚ÌAR‚ÆG‚ğŒğŠ·B
+// ï¿½Úï¿½ï¿½ï¿½ï¿½Wï¿½nï¿½Å‚Ì–@ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ÌARï¿½ï¿½Gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
 bool g_swapTangentAndBinormal
 <
 	string UIName = "  |  + swap Tangent and Binormal.";
 > = false;
 
-// ÚüÀ•WŒn‚ÌTangentŠî’êƒxƒNƒgƒ‹‚ÌŒü‚«‚ğ”½“]‚·‚éB
+// ï¿½Úï¿½ï¿½ï¿½ï¿½Wï¿½nï¿½ï¿½Tangentï¿½ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ÌŒï¿½ï¿½ï¿½ï¿½ğ”½“]ï¿½ï¿½ï¿½ï¿½B
 bool g_flipTangent
 <
 	string UIName = "  |  + flip Tangent";
 > = false;
 
-// ÚüÀ•WŒn‚ÌBinormalŠî’êƒxƒNƒgƒ‹‚ÌŒü‚«‚ğ”½“]‚·‚éB
+// ï¿½Úï¿½ï¿½ï¿½ï¿½Wï¿½nï¿½ï¿½Binormalï¿½ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ÌŒï¿½ï¿½ï¿½ï¿½ğ”½“]ï¿½ï¿½ï¿½ï¿½B
 bool g_flipBinormal
 <
 	string UIName = "  |  + flip Binormal";
 > = false;
 
-// –@üƒ}ƒbƒv‚ÌƒfƒoƒbƒO
+// ï¿½@ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½Ìƒfï¿½oï¿½bï¿½O
 bool g_debugShowNormalDir
 <
 	string UIName = "  + output normal direction to color (debug)";
 > = false;
 
 
-// ŠÂ‹«ƒ}ƒbƒvƒeƒNƒXƒ`ƒƒ
-// Eƒrƒbƒgƒ}ƒbƒv
-// E’²®ƒJƒ‰[
-// EƒtƒŒƒlƒ‹€
+// ï¿½Â‹ï¿½ï¿½}ï¿½bï¿½vï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½
+// ï¿½Eï¿½rï¿½bï¿½gï¿½}ï¿½bï¿½v
+// ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[
+// ï¿½Eï¿½tï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½
 bool g_enablesEnvironmentMap
 <
 	string UIName = "* ENVIRONMENT MAP";
@@ -376,7 +376,7 @@ float g_fresnelR1
 	float UIStep = 0.01f;
 > = 0.8f;
 
-// ƒpƒ‰ƒ‰ƒbƒNƒXƒ}ƒbƒv
+// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½bï¿½Nï¿½Xï¿½}ï¿½bï¿½v
 bool g_enablesParallaxMap
 <
 	string UIName = "* PARALLAX MAP";
@@ -390,41 +390,41 @@ int g_parallaxMapSource
 	int UIStep = 1;
 > = 0;
 
-float g_parallaxMapStride
+float g_parallaxMapBiglandsEngine
 <
-	string UIName = "  + stride";
+	string UIName = "  + BiglandsEngine";
 > = 0.03f;
 
 
-// —ÖŠs‚ÌƒJƒ‰[
+// ï¿½ÖŠsï¿½ÌƒJï¿½ï¿½ï¿½[
 float4 g_edgeColor
 <
 	string UIName = "* Edge color";
 > = float4( 0.0f, 0.0f, 0.0f, 1.0f );
 
-// —ÖŠs‚Ì•
+// ï¿½ÖŠsï¿½Ì•ï¿½
 float g_edgeSize
 <
 	string UIName = "  + edge size(1/1000)";
 > = 4.0f;
 
-// ƒtƒHƒO‚Ì‰e‹¿
+// ï¿½tï¿½Hï¿½Oï¿½Ì‰eï¿½ï¿½
 bool g_enablesFog
 <
 	string UIName = "* FOG";
 > = true;
 
-// ŠÂ‹«Œõ(ŠÂ‹«ƒOƒ[ƒoƒ‹)
+// ï¿½Â‹ï¿½ï¿½ï¿½(ï¿½Â‹ï¿½ï¿½Oï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½)
 float3 g_ambientLightColor
 <
 	string UIName = "* AMBIENT LIGHT COLOR";
 > = float3(0.3, 0.3, 0.3);
 
-// ƒtƒHƒO(ŠÂ‹«ƒOƒ[ƒoƒ‹)
-// Eí—Ş
-// EƒtƒHƒOƒJƒ‰[
-// EƒŠƒjƒAƒtƒHƒO‚ÌŠJn/I—¹‹——£
-// Ew”ƒtƒHƒO‚Ì”Z“xŒW”
+// ï¿½tï¿½Hï¿½O(ï¿½Â‹ï¿½ï¿½Oï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½)
+// ï¿½Eï¿½ï¿½ï¿½
+// ï¿½Eï¿½tï¿½Hï¿½Oï¿½Jï¿½ï¿½ï¿½[
+// ï¿½Eï¿½ï¿½ï¿½jï¿½Aï¿½tï¿½Hï¿½Oï¿½ÌŠJï¿½n/ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ï¿½Eï¿½wï¿½ï¿½ï¿½tï¿½Hï¿½Oï¿½Ì”Zï¿½xï¿½Wï¿½ï¿½
 int g_fogDensityType
 <
 	string UIName = "* FOG DENSITY(0:non/ 1:linear/ 2:exp/ 3:exp2)";
@@ -464,11 +464,11 @@ float g_fogDensity
 
 //----------------------------------------------------------------------------
 
-// ’¸“_ƒJƒ‰[‚ğ’¸“_ƒVƒF[ƒ_‚É“ü—Í‚µ‚½‚¢ê‡‚É‚ÍATEXCOORD‚ÉŠ„‚è“–‚Ä‚éB
+// ï¿½ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[ï¿½ğ’¸“_ï¿½Vï¿½Fï¿½[ï¿½_ï¿½É“ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½É‚ÍATEXCOORDï¿½ÉŠï¿½ï¿½è“–ï¿½Ä‚ï¿½B
 int texcoord3 : Texcoord
 <
-	int Texcoord = 3;		// ’¸“_ƒJƒ‰[‚ğó‚¯æ‚éTEXCOORD”Ô†
-	int MapChannel = 0;		// ’¸“_ƒJƒ‰[‚ğw‚·MAX‚Å‚Ìƒ}ƒbƒvƒ`ƒƒƒ“ƒlƒ‹”Ô†
+	int Texcoord = 3;		// ï¿½ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ó‚¯ï¿½ï¿½TEXCOORDï¿½Ôï¿½
+	int MapChannel = 0;		// ï¿½ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½wï¿½ï¿½MAXï¿½Å‚Ìƒ}ï¿½bï¿½vï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Ôï¿½
 >;
 
 struct VSOutput
@@ -518,32 +518,32 @@ VSOutput VS(
 {
 	VSOutput o;
 
-	// ƒ‰ƒXƒ^ƒ‰ƒCƒY‚Ìˆ×‚É’¸“_‚Ì“¯À•W‚ğo—ÍB
+	// ï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Cï¿½Yï¿½Ìˆ×‚É’ï¿½ï¿½_ï¿½Ì“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½oï¿½ÍB
 	o.vtPosition = mul(float4(iPosition,1), g_mtxWorldViewProj);
 
-	// ViewÀ•WŒn‚Å‚ÌƒsƒNƒZƒ‹‚©‚ç‹“_‚Ö‚ÌƒxƒNƒgƒ‹‚ğŒvZB
-	// PerPixelLighting‚É‚¨‚¢‚ÄQÆ‚³‚ê‚éB
+	// Viewï¿½ï¿½ï¿½Wï¿½nï¿½Å‚Ìƒsï¿½Nï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ç‹ï¿½_ï¿½Ö‚Ìƒxï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½B
+	// PerPixelLightingï¿½É‚ï¿½ï¿½ï¿½ï¿½ÄQï¿½Æ‚ï¿½ï¿½ï¿½ï¿½B
 	if(g_mtxProjection[3][3] == 0.0f)
 	{
-		// “§‹•ÏŠ·‚Ìê‡B•’ÊB
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ÏŠï¿½ï¿½Ìê‡ï¿½Bï¿½ï¿½ï¿½ÊB
 		o.vtViewDirection = -1.0f * mul(float4(iPosition,1), g_mtxWorldView).xyz;
 	}
 	else
 	{
-		// ³Ë‰es—ñ‚Ìê‡AƒsƒNƒZƒ‹‚ÌˆÊ’u‚É‚©‚©‚í‚ç‚¸‹ü•ûŒü‚Í•½s‚É‚È‚éB
+		// ï¿½ï¿½ï¿½Ë‰eï¿½sï¿½ï¿½Ìê‡ï¿½Aï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ÌˆÊ’uï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½ç‚¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í•ï¿½ï¿½sï¿½É‚È‚ï¿½B
 		o.vtViewDirection = float3(0,0,-1);
 	}
 
-	if(g_enablesNormalMap || g_parallaxMapStride)
+	if(g_enablesNormalMap || g_parallaxMapBiglandsEngine)
 	{
 		float3 tmpNs;
 		float3 tmpNt;
 		float3 tmpNv;
 		if(g_enablesNormalMap && (g_normalMapType == 0))
 		{
-			// ƒ‚ƒfƒ‹‚Ìƒ[ƒJƒ‹À•WŒn‚Å‚Ì–@üƒ}ƒbƒv
-			// –@üƒ}ƒbƒv‚ÌŠî’êƒxƒNƒgƒ‹—p‚ÉAƒ‚ƒfƒ‹À•WŒn‚ÌŠî’êƒxƒNƒgƒ‹‚ğ
-			// ƒrƒ…[À•WŒn‚Ö•ÏŠ·‚µ‚Äo—ÍB
+			// ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½nï¿½Å‚Ì–@ï¿½ï¿½ï¿½}ï¿½bï¿½v
+			// ï¿½@ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ÌŠï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½pï¿½ÉAï¿½ï¿½ï¿½fï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½nï¿½ÌŠï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½
+			// ï¿½rï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Wï¿½nï¿½Ö•ÏŠï¿½ï¿½ï¿½ï¿½Äoï¿½ÍB
 			tmpNs = g_vtBaseAxis[g_normalMapAxisR];
 			tmpNt = g_vtBaseAxis[g_normalMapAxisG];
 			tmpNv = cross(tmpNs, tmpNt);
@@ -554,8 +554,8 @@ VSOutput VS(
 		}
 		else
 		{
-			// ƒeƒNƒXƒ`ƒƒ‚ÌÚü‹óŠÔ‚Å‚Ì–@üƒ}ƒbƒv
-			// MAX‚ÌƒvƒŒƒrƒ…[‚Åg—p‚³‚ê‚éTangent‚ÆBinormal‚Í‹t‚É‚È‚Á‚Ä‚¢‚éIH
+			// ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ÌÚï¿½ï¿½ï¿½Ô‚Å‚Ì–@ï¿½ï¿½ï¿½}ï¿½bï¿½v
+			// MAXï¿½Ìƒvï¿½ï¿½ï¿½rï¿½ï¿½ï¿½[ï¿½Ågï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Tangentï¿½ï¿½Binormalï¿½Í‹tï¿½É‚È‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Iï¿½H
 			// r -> binormal
 			// g -> tangent
 			tmpNs = g_swapTangentAndBinormal? iTangent: iBinormal;
@@ -574,25 +574,25 @@ VSOutput VS(
 	}
 	else
 	{
-		// ViewÀ•WŒn‚Å‚Ì–@üƒxƒNƒgƒ‹‚ğo—ÍB
+		// Viewï¿½ï¿½ï¿½Wï¿½nï¿½Å‚Ì–@ï¿½ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ÍB
 		o.Nv = mul(iNormal, (float3x3)g_mtxWorldView);
-		// –@üƒ}ƒbƒv—p‚ÌŠî’êƒxƒNƒgƒ‹‚Ío—Í‚µ‚È‚¢B
+		// ï¿½@ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½pï¿½ÌŠï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½Íoï¿½Í‚ï¿½ï¿½È‚ï¿½ï¿½B
 		o.Ns = float3(0, 0, 0);
 		o.Nt = float3(0, 0, 0);
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ÌUVƒAƒhƒŒƒX‚ğ‚»‚Ì‚Ü‚Üo—ÍB
-	// (MAX‚Ì)MapChannel‚ÆTexCoord‚Æ‚ÌŠ„“–‚ÍAMAX‚ÌDirectX9Shader‚ª
-	// ƒ}ƒbƒsƒ“ƒO‚ğˆ—‚·‚éB
+	// ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½UVï¿½Aï¿½hï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Ü‚Üoï¿½ÍB
+	// (MAXï¿½ï¿½)MapChannelï¿½ï¿½TexCoordï¿½Æ‚ÌŠï¿½ï¿½ï¿½ï¿½ÍAMAXï¿½ï¿½DirectX9Shaderï¿½ï¿½
+	// ï¿½}ï¿½bï¿½sï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
 	o.uv0 = iTexCoord0;
 	o.uv1 = iTexCoord1;
 	o.uv2 = iTexCoord2;
 
-	// ƒJƒ‰[‚ğ‚»‚Ì‚Ü‚Üo—Í
+	// ï¿½Jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Ü‚Üoï¿½ï¿½
 	o.color = float4(iColor, 1);
 
-	// ƒtƒHƒO‚Ì‹——£‚ğo—Í
-	// üŒ`ƒtƒHƒO‚Å‚ÍAŠJn‹——£‚©‚çI—¹‹——£‚ÌŠÔ‚Å‚Ì³‹K‰»‚ğÏ‚Ü‚¹‚Ä‚¨‚­B
+	// ï¿½tï¿½Hï¿½Oï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
+	// ï¿½ï¿½ï¿½`ï¿½tï¿½Hï¿½Oï¿½Å‚ÍAï¿½Jï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠÔ‚Å‚Ìï¿½ï¿½Kï¿½ï¿½ï¿½ï¿½ï¿½Ï‚Ü‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½B
 	if(g_fogDensityType == 1)
 	{
 		o.fogDistance = (g_fogEnd - o.vtPosition.w) / (g_fogEnd - g_fogStart);
@@ -612,13 +612,13 @@ float4 PS(
 	uniform bool enablesEnvironmentMap
 	) : COLOR0
 {
-	// Œõü‚Ì•ûŒü‚ğViewÀ•WŒn‚Ö•ÏŠ·B
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½Viewï¿½ï¿½ï¿½Wï¿½nï¿½Ö•ÏŠï¿½ï¿½B
 	float3 vtLightDir = mul(float4(g_vtLightDir,0), g_mtxView);
-	// ƒsƒNƒZƒ‹‚©‚ç‹“_‚ÖŒü‚©‚¤•ûŒü‚Ì’PˆÊƒxƒNƒgƒ‹‚ğŒvZB
+	// ï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ç‹ï¿½_ï¿½ÖŒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì’Pï¿½Êƒxï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Zï¿½B
 	float3 vtEye = normalize(i.vtViewDirection);
 
-	// ƒpƒ‰ƒ‰ƒbƒNƒXƒ}ƒbƒv‚É‚æ‚éƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒX‚ÌƒIƒtƒZƒbƒg‚ğŒvZ
-	float2 uvStride = 0;
+	// ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½bï¿½Nï¿½Xï¿½}ï¿½bï¿½vï¿½É‚ï¿½ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½Aï¿½hï¿½ï¿½ï¿½Xï¿½ÌƒIï¿½tï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½vï¿½Z
+	float2 uvBiglandsEngine = 0;
 	if(g_enablesParallaxMap)
 	{
 		float height;
@@ -634,58 +634,58 @@ float4 PS(
 		{
 			height = tex2D(g_texsmpNormalMap, i.uv2).a;
 		}
-		uvStride =
-			(1.0f - height) * -g_parallaxMapStride
+		uvBiglandsEngine =
+			(1.0f - height) * -g_parallaxMapBiglandsEngine
 		  * float2(dot(i.Ns, vtEye), dot(i.Nt, vtEye));
 	}
 
-	// –@üƒxƒNƒgƒ‹‚ğŒˆ’è
+	// ï¿½@ï¿½ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	float3 vtNormal;
 	if(!g_enablesNormalMap)
 	{
-		// ’¸“_ƒVƒF[ƒ_‚©‚ço—Í‚³‚ê‚½–@üƒxƒNƒgƒ‹‚ğg‚¤B
+		// ï¿½ï¿½ï¿½_ï¿½Vï¿½Fï¿½[ï¿½_ï¿½ï¿½ï¿½ï¿½oï¿½Í‚ï¿½ï¿½ê‚½ï¿½@ï¿½ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½B
 		vtNormal = i.Nv;
 	}
 	else
 	{
-		// –@üƒ}ƒbƒv‚©‚çƒxƒNƒgƒ‹‚ğ“Ç‚İæ‚éB
-		float3 n = tex2D(g_texsmpNormalMap, i.uv2+uvStride).xyz;
+		// ï¿½@ï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½ï¿½ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½Ç‚İï¿½ï¿½B
+		float3 n = tex2D(g_texsmpNormalMap, i.uv2+uvBiglandsEngine).xyz;
 		n = 2.0f * (n - 0.5f);
 		vtNormal = (n.x * i.Ns) + (n.y * i.Nt) + (n.z * i.Nv);
 	}
-	// –@üƒxƒNƒgƒ‹‚ğ³‹K‰»B
+	// ï¿½@ï¿½ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½ğ³‹Kï¿½ï¿½ï¿½B
 	vtNormal = normalize(vtNormal);
 
-	// ƒx[ƒXƒeƒNƒXƒ`ƒƒ‚ğƒtƒFƒbƒ`
+	// ï¿½xï¿½[ï¿½Xï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½Fï¿½bï¿½`
 	float4 textureColor[2];
-	textureColor[0] = enablesBaseTexture? tex2D(g_texsmpBaseColor, i.uv0+uvStride): float4(1,1,1,1);
-	textureColor[1] = enablesUtilTexture? tex2D(g_texsmpUtilColor, i.uv1+uvStride): float4(1,1,1,1);
+	textureColor[0] = enablesBaseTexture? tex2D(g_texsmpBaseColor, i.uv0+uvBiglandsEngine): float4(1,1,1,1);
+	textureColor[1] = enablesUtilTexture? tex2D(g_texsmpUtilColor, i.uv1+uvBiglandsEngine): float4(1,1,1,1);
 
-	// ƒ|ƒŠƒSƒ“‚Ìƒx[ƒXƒJƒ‰[‚ğŒˆ’è
+	// ï¿½|ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½Ìƒxï¿½[ï¿½Xï¿½Jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	float4 colorMaterial =
-		// ƒ}ƒeƒŠƒAƒ‹ƒJƒ‰[
+		// ï¿½}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[
 		(step(g_diffuseColorSelect, 0) * step(0, g_diffuseColorSelect) * g_diffuseColor)
-		// ’¸“_ƒJƒ‰[
+		// ï¿½ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[
 	  + (step(g_diffuseColorSelect, 1) * step(1, g_diffuseColorSelect) * i.color)
-		// ƒ}ƒeƒŠƒAƒ‹‚Æ’¸“_ƒJƒ‰[‚ÌÏ
+		// ï¿½}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Æ’ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[ï¿½Ìï¿½
 	  + (step(2, g_diffuseColorSelect) * g_diffuseColor * i.color);
 
-	// ƒ}ƒeƒŠƒAƒ‹‚Ìƒx[ƒXƒJƒ‰[‚É‘Î‚·‚éƒ‰ƒCƒeƒBƒ“ƒOŒ‹‰Ê‚Ì‹P“x
+	// ï¿½}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ìƒxï¿½[ï¿½Xï¿½Jï¿½ï¿½ï¿½[ï¿½É‘Î‚ï¿½ï¿½éƒ‰ï¿½Cï¿½eï¿½Bï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ê‚Ì‹Pï¿½x
 	float4 lumDiffuse = { 0, 0, 0, 1 };
 	float3 lumSpecular = { 0, 0, 0 };
 	float3 lumRimSpecular = { 0, 0, 0 };
 
-	// ƒ‰ƒCƒeƒBƒ“ƒO
+	// ï¿½ï¿½ï¿½Cï¿½eï¿½Bï¿½ï¿½ï¿½O
 	if(g_enablesLighting != 0)
 	{
-		// ”’F‚Ìƒ}ƒeƒŠƒAƒ‹‚É‘Î‚µ‚Ä‚ÌŠgU”½Ë‚ğŒvZB
+		// ï¿½ï¿½ï¿½Fï¿½Ìƒ}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½É‘Î‚ï¿½ï¿½Ä‚ÌŠgï¿½Uï¿½ï¿½ï¿½Ë‚ï¿½ï¿½vï¿½Zï¿½B
 		float d = max(0, dot(vtNormal, vtLightDir));
 		lumDiffuse.rgb += d * g_colorLight.rgb;
 
-		// ŠÂ‹«Œõ‚ğ‰ÁZ
+		// ï¿½Â‹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Z
 		lumDiffuse.rgb += g_ambientLightColor;
 
-		// ”’F‚Ìƒ}ƒeƒŠƒAƒ‹‚É‘Î‚µ‚Ä‚ÌƒXƒyƒLƒ…ƒ‰[‚ğŒvZB
+		// ï¿½ï¿½ï¿½Fï¿½Ìƒ}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½É‘Î‚ï¿½ï¿½Ä‚ÌƒXï¿½yï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½vï¿½Zï¿½B
 		if(g_enablesSpecular)
 		{
 			float3 vtHalf = normalize(vtLightDir + vtEye);
@@ -694,7 +694,7 @@ float4 PS(
 			lumSpecular = s * g_colorLight.rgb;
 		}
 
-		// ”’F‚Ìƒ}ƒeƒŠƒAƒ‹‚É‘Î‚µ‚Ä‚ÌƒŠƒ€ƒXƒyƒLƒ…ƒ‰[‚ğŒvZB
+		// ï¿½ï¿½ï¿½Fï¿½Ìƒ}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½É‘Î‚ï¿½ï¿½Ä‚Ìƒï¿½ï¿½ï¿½ï¿½Xï¿½yï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½vï¿½Zï¿½B
 		if(g_enablesRimSpecular)
 		{
 			float fr = pow((1.0f - dot(vtNormal, vtEye)), g_rimSpecularPower);
@@ -702,12 +702,12 @@ float4 PS(
 			lumRimSpecular = (fr * lumi) * g_colorLight.rgb;
 		}
 
-		// ŠgU”½Ë‚ÌŒ¸Š‚ğ“K—pB
+		// ï¿½gï¿½Uï¿½ï¿½ï¿½Ë‚ÌŒï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½pï¿½B
 		lumDiffuse.rgb *= g_diffuseAttenuation;
-		// ©ŒÈ”­Œõ‚Ì‹P“x‚ğ‰ÁZB
+		// ï¿½ï¿½ï¿½È”ï¿½ï¿½ï¿½ï¿½Ì‹Pï¿½xï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½B
 		lumDiffuse.rgb += g_emissionColor;
 
-		// ƒ}ƒeƒŠƒAƒ‹ƒJƒ‰[‚ÉŠgU”½Ë‚ÌƒVƒF[ƒfƒBƒ“ƒO‚ğ“K—pB
+		// ï¿½}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½ÉŠgï¿½Uï¿½ï¿½ï¿½Ë‚ÌƒVï¿½Fï¿½[ï¿½fï¿½Bï¿½ï¿½ï¿½Oï¿½ï¿½Kï¿½pï¿½B
 		colorMaterial *= lumDiffuse;
 	}
 	else
@@ -716,12 +716,12 @@ float4 PS(
 		lumSpecular = float3(0,0,0);
 	}
 
-	// ƒeƒNƒXƒ`ƒƒƒJƒ‰[/ƒAƒ‹ƒtƒ@‚ğ“K—p
-	// ƒsƒNƒZƒ‹‚ÌÅIƒJƒ‰[‚ğ‘ã“ü‚·‚é•Ï”B
+	// ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[/ï¿½Aï¿½ï¿½ï¿½tï¿½@ï¿½ï¿½Kï¿½p
+	// ï¿½sï¿½Nï¿½Zï¿½ï¿½ï¿½ÌÅIï¿½Jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïï¿½ï¿½B
 	float4 pixelColor = colorMaterial;
 	if(enablesBaseTexture)
 	{
-		// ƒx[ƒXƒJƒ‰[ƒeƒNƒXƒ`ƒƒ‚Ì‡¬
+		// ï¿½xï¿½[ï¿½Xï¿½Jï¿½ï¿½ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
 		pixelColor =
 			// ModulateRGBA
 			(step(g_blendBaseColorTexture,0) * step(0,g_blendBaseColorTexture) *
@@ -751,7 +751,7 @@ float4 PS(
 	}
 	if(enablesUtilTexture)
 	{
-		// •â•ƒJƒ‰[ƒeƒNƒXƒ`ƒƒ‚Ì‡¬
+		// ï¿½â•ï¿½Jï¿½ï¿½ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
 		pixelColor =
 			// ModulateRGBA
 			(step(g_blendUtilColorTexture,0) * step(0,g_blendUtilColorTexture) *
@@ -788,58 +788,58 @@ float4 PS(
 					   colorMaterial.a * lerp(textureColor[0].a, 1.0, textureColor[1].a)));
 	}
 
-	// ƒOƒƒXƒ}ƒbƒv’l‚ğ‘ã“ü
+	// ï¿½Oï¿½ï¿½ï¿½Xï¿½}ï¿½bï¿½vï¿½lï¿½ï¿½ï¿½ï¿½
 	float glossMap;
 	if(!g_enablesGlossMap)
 	{
-		// –³Œø
+		// ï¿½ï¿½ï¿½ï¿½
 		glossMap = 1.0f;
 	}
 	else
 	{
 		glossMap = 
-			// ƒx[ƒXƒJƒ‰[ƒeƒNƒXƒ`ƒƒ‚ÌƒAƒ‹ƒtƒ@
+			// ï¿½xï¿½[ï¿½Xï¿½Jï¿½ï¿½ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ÌƒAï¿½ï¿½ï¿½tï¿½@
 			(step(g_indexGlossSrc,0) * step(0,g_indexGlossSrc) * textureColor[0].a)
-			// •â•ƒJƒ‰[ƒeƒNƒXƒ`ƒƒ‚ÌƒAƒ‹ƒtƒ@
+			// ï¿½â•ï¿½Jï¿½ï¿½ï¿½[ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ÌƒAï¿½ï¿½ï¿½tï¿½@
 		  + (step(g_indexGlossSrc,1) * step(1,g_indexGlossSrc) * textureColor[1].a)
-			// ƒtƒ‰ƒOƒƒ“ƒg‚ÌƒAƒ‹ƒtƒ@
+			// ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ÌƒAï¿½ï¿½ï¿½tï¿½@
 		  + (step(2,g_indexGlossSrc) * pixelColor.a);
 	}
 
-	// ƒXƒyƒLƒ…ƒ‰[ƒJƒ‰[‚ğŒˆ’è
+	// ï¿½Xï¿½yï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(g_enablesSpecular)
 	{
 		float3 colorSpecular = 
-			// ƒ}ƒeƒŠƒAƒ‹ƒJƒ‰[
+			// ï¿½}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[
 			(step(g_specularColorSelector,0) * step(0,g_specularColorSelector) * g_colorSpecular)
-			// ’¸“_ƒJƒ‰[
+			// ï¿½ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[
 		  + (step(g_specularColorSelector,1) * step(1,g_specularColorSelector) * i.color.rgb)
-			// ƒ}ƒeƒŠƒAƒ‹‚Æ’¸“_ƒJƒ‰[‚ÌÏ
+			// ï¿½}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Æ’ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[ï¿½Ìï¿½
 		  + (step(g_specularColorSelector,2) * step(2,g_specularColorSelector) * g_colorSpecular * i.color.rgb)
-			// ƒtƒ‰ƒOƒƒ“ƒg‚ÌƒJƒ‰[B
+			// ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ÌƒJï¿½ï¿½ï¿½[ï¿½B
 		  + (step(3,g_specularColorSelector) * g_colorSpecular * pixelColor.rgb);
 
-		// ƒXƒyƒLƒ…ƒ‰[‚ğ‚Ì‚¹‚éB
+		// ï¿½Xï¿½yï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½B
 		pixelColor.rgb += glossMap * lumSpecular * colorSpecular;
 	}
 
-	// ƒŠƒ€ƒXƒyƒLƒ…ƒ‰[‚ğ‚Ì‚¹‚éB
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½yï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½B
 	if(g_enablesRimSpecular)
 	{
 		float3 colorRimSpecular = 
-			// ƒ}ƒeƒŠƒAƒ‹ƒJƒ‰[
+			// ï¿½}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[
 			(step(g_specularColorSelector,0) * step(0,g_specularColorSelector) * g_colorRimSpecular)
-			// ’¸“_ƒJƒ‰[
+			// ï¿½ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[
 		  + (step(g_specularColorSelector,1) * step(1,g_specularColorSelector) * i.color.rgb)
-			// ƒ}ƒeƒŠƒAƒ‹‚Æ’¸“_ƒJƒ‰[‚ÌÏ
+			// ï¿½}ï¿½eï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Æ’ï¿½ï¿½_ï¿½Jï¿½ï¿½ï¿½[ï¿½Ìï¿½
 		  + (step(g_specularColorSelector,2) * step(2,g_specularColorSelector) * g_colorRimSpecular * i.color.rgb)
-			// ƒtƒ‰ƒOƒƒ“ƒg‚ÌƒJƒ‰[B
+			// ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ÌƒJï¿½ï¿½ï¿½[ï¿½B
 		  + (step(3,g_specularColorSelector) * g_colorRimSpecular * pixelColor.rgb);
 
 		pixelColor.rgb += glossMap * lumRimSpecular * colorRimSpecular;
 	}
 
-	// ŠÂ‹«ƒ}ƒbƒv‚ğ‚Ì‚¹‚é
+	// ï¿½Â‹ï¿½ï¿½}ï¿½bï¿½vï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½
 	if(enablesEnvironmentMap)
 	{
 		float3 colEnvironmentMap;
@@ -848,10 +848,10 @@ float4 PS(
 
 		if(g_environmentMapType == 0)
 		{
-			// ƒ[ƒ‹ƒhÀ•WŒn‚Å‚ÌƒLƒ…[ƒuŠÂ‹«ƒ}ƒbƒv‚ğs‚¤B
+			// ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Wï¿½nï¿½Å‚ÌƒLï¿½ï¿½ï¿½[ï¿½uï¿½Â‹ï¿½ï¿½}ï¿½bï¿½vï¿½ï¿½ï¿½sï¿½ï¿½ï¿½B
 			rv = mul(half4(rv,0), g_imtxView);
 
-			// MAX‚ÆDirect3D‚ÌÀ•WŒn‚Ìˆá‚¢‚ğC³B
+			// MAXï¿½ï¿½Direct3Dï¿½Ìï¿½ï¿½Wï¿½nï¿½Ìˆá‚¢ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½B
 			rv = half3(-1,-1,-1) * rv.xzy;
 
 			colEnvironmentMap =
@@ -860,7 +860,7 @@ float4 PS(
 		}
 		else
 		{
-			// ƒrƒ…[À•WŒn‚Å‚Ì‹…óŠÂ‹«ƒ}ƒbƒv‚ğs‚¤
+			// ï¿½rï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Wï¿½nï¿½Å‚Ì‹ï¿½ï¿½ï¿½Â‹ï¿½ï¿½}ï¿½bï¿½vï¿½ï¿½ï¿½sï¿½ï¿½
 			half3 r = rv;
 			r.z += 1.0;
 			r = r * r;
@@ -874,7 +874,7 @@ float4 PS(
 
 		if(g_enablesFresnelTerm)
 		{
-			// ƒtƒŒƒlƒ‹€‚É‚æ‚Á‚ÄŠÂ‹«ƒ}ƒbƒv‚Ì‹­‚³‚ğ’²®‚·‚éB
+			// ï¿½tï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½ÄŠÂ‹ï¿½ï¿½}ï¿½bï¿½vï¿½Ì‹ï¿½ï¿½ï¿½ï¿½ğ’²ï¿½ï¿½ï¿½ï¿½ï¿½B
 			float f = pow(1.0f - dot(vtEye, vtNormal), 4.0f);
 			f = g_fresnelR0 + g_fresnelR1 * f;
 			f *= glossMap;
@@ -882,21 +882,21 @@ float4 PS(
 		}
 		else
 		{
-			// ‚»‚Ì‚Ü‚ÜƒsƒNƒZƒ‹‚ÌF‚Ö‰ÁZ‚·‚éB
+			// ï¿½ï¿½ï¿½Ì‚Ü‚Üƒsï¿½Nï¿½Zï¿½ï¿½ï¿½ÌFï¿½Ö‰ï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½B
 			pixelColor.rgb += glossMap * colEnvironmentMap.rgb;
 		}
 	}
 
-	// ƒtƒHƒO‚Æ‚Ì‡¬
-	//  ƒtƒHƒOƒXƒCƒbƒ`‚ªOFF‚È‚ç‚ÎƒtƒHƒO‚ğ–³Œø‚É‚·‚éB
+	// ï¿½tï¿½Hï¿½Oï¿½Æ‚Ìï¿½ï¿½ï¿½
+	//  ï¿½tï¿½Hï¿½Oï¿½Xï¿½Cï¿½bï¿½`ï¿½ï¿½OFFï¿½È‚ï¿½Îƒtï¿½Hï¿½Oï¿½ğ–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½B
 	int fogType = (g_enablesFog? 1: 0) * g_fogDensityType;
 	if(fogType == 0)
 	{
-		// ƒtƒHƒO–³Œø
+		// ï¿½tï¿½Hï¿½Oï¿½ï¿½ï¿½ï¿½
 	}
 	else if(fogType == 1)
 	{
-		// üŒ`ƒtƒHƒO
+		// ï¿½ï¿½ï¿½`ï¿½tï¿½Hï¿½O
 		pixelColor.rgb = lerp(
 			g_fogColor.rgb,
 			pixelColor.rgb,
@@ -904,7 +904,7 @@ float4 PS(
 	}
 	else if(fogType == 2)
 	{
-		// w”ƒtƒHƒO
+		// ï¿½wï¿½ï¿½ï¿½tï¿½Hï¿½O
 		float d = ((g_fogDensity * 0.001) * i.fogDistance);
 		pixelColor.rgb = lerp(
 			g_fogColor.rgb,
@@ -913,7 +913,7 @@ float4 PS(
 	}
 	else if(fogType == 3)
 	{
-		// w”ƒtƒHƒO2
+		// ï¿½wï¿½ï¿½ï¿½tï¿½Hï¿½O2
 		float d = ((g_fogDensity * 0.001) * i.fogDistance);
 		pixelColor.rgb = lerp(
 			g_fogColor.rgb,
@@ -921,7 +921,7 @@ float4 PS(
 			exp(-d*d));
 	}
 
-	// ƒfƒoƒbƒO–Ú“I‚ÅA–@ü•ûŒü‚ğƒJƒ‰[‚Åo—ÍB
+	// ï¿½fï¿½oï¿½bï¿½Oï¿½Ú“Iï¿½ÅAï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½Åoï¿½ÍB
 	if(g_debugShowNormalDir)
 	{
 		pixelColor.rgb = float3(vtNormal);
@@ -944,10 +944,10 @@ ExpandMeshVSOutput ExpandMeshVS(
 {
 	ExpandMeshVSOutput o;
 
-	// ƒ‰ƒXƒ^ƒ‰ƒCƒY‚Ìˆ×‚É’¸“_‚Ì“¯À•W‚ğo—ÍB
+	// ï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Cï¿½Yï¿½Ìˆ×‚É’ï¿½ï¿½_ï¿½Ì“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½oï¿½ÍB
 	o.vtPosition = mul(iPosition, g_mtxWorldViewProj);
 
-	// ƒXƒNƒŠ[ƒ“À•Wã‚Å–@ü•ûŒü‚É’¸“_‚ğŠg‘å‚·‚éB
+	// ï¿½Xï¿½Nï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½Å–@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É’ï¿½ï¿½_ï¿½ï¿½ï¿½gï¿½å‚·ï¿½ï¿½B
 	float2 expand = mul(float4(iNormal,0.0), g_mtxWorldViewProj).xy;
 	if(0.000000000001 < dot(expand, expand))
 	{

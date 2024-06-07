@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <BiglandsEngineRuntime>true</BiglandsEngineRuntime>
+    <BiglandsEngineGraphicsApiDependent>true</BiglandsEngineGraphicsApiDependent>
+  </PropertyGroup>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\BiglandsEngine.Graphics\BiglandsEngine.Graphics.csproj" />
+    <PackageReference Include="Microsoft.Win32.Registry" />
+    <PackageReference Include="SharpDX.Direct3D11" Condition="'$(TargetFramework)' == '$(BiglandsEngineFramework)' Or '$(TargetFramework)' == '$(BiglandsEngineFrameworkUWP)'" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>

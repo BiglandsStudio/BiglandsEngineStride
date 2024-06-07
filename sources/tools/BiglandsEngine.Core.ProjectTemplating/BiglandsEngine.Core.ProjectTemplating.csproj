@@ -1,0 +1,14 @@
+<Project>
+  <Import Project="..\..\targets\BiglandsEngine.props" />
+  <PropertyGroup>
+    <BiglandsEngineAssemblyProcessor>true</BiglandsEngineAssemblyProcessor>
+    <TargetFramework>$(BiglandsEngineXplatEditorTargetFramework)</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BiglandsEngine.Mono.TextTemplating" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\BiglandsEngine.Core.Design\BiglandsEngine.Core.Design.csproj" />
+  </ItemGroup>
+  <Import Project="$(BiglandsEngineSdkTargets)" />
+</Project>
